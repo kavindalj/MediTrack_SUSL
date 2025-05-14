@@ -166,10 +166,10 @@ php artisan make:migration create_table_name
 
 ## ✅ Tips
 
-* To stop all services:
+* To stop all Docker containers, run:
 
   ```bash
-  docker compose down
+  docker compose stop
   ```
 
 ---
