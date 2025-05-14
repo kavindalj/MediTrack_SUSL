@@ -31,8 +31,8 @@ Make sure you have the following tools installed on your machine:
 Clone the project to your local development environment:
 
 ```bash
-git clone https://github.com/yourusername/your-repo.git
-cd your-repo
+git clone https://github.com/kavindalj/MediTrack_SUSL.git
+cd MediTrack_SUSL
 ````
 
 ---
