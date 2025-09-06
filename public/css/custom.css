@@ -1,0 +1,213 @@
+/* MediTrack Custom Styles */
+:root {
+    --primary: #2b7ec1;
+    --secondary: #5dade2;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --sidebar-bg: #2b7ec1;
+    --sidebar-active: #5dade2;
+    --card-cyan: #17a2b8;
+    --card-green: #28a745;
+    --card-red: #dc3545;
+    --card-yellow: #ffc107;
+    --sidebar-width: 250px;
+}
+
+body {
+    font-family: "Nunito", sans-serif;
+    background-color: #f8fafc;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1e5a96 100%);
+    min-height: 100vh;
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem 1.5rem;
+    margin: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: white;
+    background-color: var(--sidebar-active);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .nav-link i {
+    width: 20px;
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Top Navigation */
+.top-navbar {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0.375rem;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .card-body {
+    padding: 1.5rem;
+}
+
+.dashboard-card .card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-card .card-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.dashboard-card .card-title {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.dashboard-card .card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0;
+}
+
+/* Card variations */
+.dashboard-card.card-cyan {
+    border-left: 4px solid var(--card-cyan);
+}
+
+.dashboard-card.card-cyan .card-icon {
+    background-color: var(--card-cyan);
+}
+
+.dashboard-card.card-green {
+    border-left: 4px solid var(--card-green);
+}
+
+.dashboard-card.card-green .card-icon {
+    background-color: var(--card-green);
+}
+
+.dashboard-card.card-red {
+    border-left: 4px solid var(--card-red);
+}
+
+.dashboard-card.card-red .card-icon {
+    background-color: var(--card-red);
+}
+
+.dashboard-card.card-yellow {
+    border-left: 4px solid var(--card-yellow);
+}
+
+.dashboard-card.card-yellow .card-icon {
+    background-color: var(--card-yellow);
+}
+
+/* Tables */
+.table-container {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    padding: 1.5rem;
+}
+
+.table-container .table {
+    margin-bottom: 0;
+}
+
+.table-container .table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 1rem 0.75rem;
+}
+
+.table-container .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+/* Logo */
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+}
+
+.logo:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.logo i {
+    margin-right: 0.5rem;
+    color: #5dade2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
