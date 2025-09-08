@@ -16,23 +16,23 @@
                 <i class="fas fa-tachometer-alt"></i>
                 Dashboard
             </a>
-            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="#categories">
+            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('dashboard.categories') }}">
                 <i class="fas fa-tags"></i>
                 Categories
             </a>
-            <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="#products">
+            <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('dashboard.products') }}">
                 <i class="fas fa-pills"></i>
                 Products
             </a>
-            <a class="nav-link {{ request()->routeIs('sale.*') ? 'active' : '' }}" href="#sale">
+            <a class="nav-link {{ request()->routeIs('sale.*') ? 'active' : '' }}" href="{{ route('dashboard.sale') }}">
                 <i class="fas fa-shopping-cart"></i>
                 Sale
             </a>
-            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="#users">
+            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
                 <i class="fas fa-users"></i>
                 Users
             </a>
-            <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="#profile">
+            <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
                 <i class="fas fa-user"></i>
                 Profile
             </a>
