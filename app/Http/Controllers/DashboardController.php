@@ -16,7 +16,7 @@ class DashboardController extends Controller
         // Sample data - replace with actual database queries
         $stats = [
             'total_drugs' => 0,
-            'product_categories' => 170,
+            'product_categories' => 120,
             'expired_products' => 0,
             'system_users' => 9
         ];
@@ -50,5 +50,34 @@ class DashboardController extends Controller
         ];
 
         return view('dashboard.index', compact('stats', 'todaySales'));
+    }
+
+    public function categories()
+    {
+        return view('dashboard.categories');
+    }
+    public function products()
+    {
+        return view('dashboard.products');
+    }
+    public function sale()
+    {
+        return view('dashboard.sale');
+    }
+    public function users()
+    {
+        return view('dashboard.users');
+    }
+    public function profile()
+    {
+        return view('dashboard.profile');
+    }
+    public function addProduct()
+    {
+        return view('dashboard.forms.addProduct');
+    }
+    public function addUser()
+    {
+        return view('dashboard.forms.addUser');
     }
 }
