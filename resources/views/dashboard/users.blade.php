@@ -133,6 +133,11 @@
             </nav>
             
             <div class="table-container">
+                <div class="d-flex justify-content-end align-items-center mb-3">
+                    <a href="{{ route('dashboard.users.add') }}" class="btn add-user-btn">
+                        <i class="fas fa-plus me-2"></i>Add User
+                    </a>
+                </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center">
                         <label class="me-2">Show</label>
