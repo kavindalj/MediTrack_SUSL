@@ -72,9 +72,9 @@ class DashboardController extends Controller
     {
         // Sample user data - replace with actual authenticated user data
         $user = [
-            'name' => 'Jamal Admin',
-            'email' => 'admin@admin.com',
-            'role' => 'super-admin',
+            'name' => 'Jamal Doe',
+            'email' => 'admin@meditrack.com',
+            'role' => 'admin',
             'avatar' => null, // Will use placeholder for now
             'created_at' => '2025-09-09',
             'updated_at' => now()

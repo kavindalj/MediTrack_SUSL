@@ -75,7 +75,7 @@
                             <h5 class="mb-0">Personal Details</h5>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="Edit personal details">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="editPersonalDetailsBtn" aria-label="Edit personal details">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -91,7 +91,7 @@
                             <span class="text-muted">Name</span>
                         </div>
                         <div class="col-sm-9">
-                            <span class="text-body">{{ $user['name'] }}</span>
+                            <span class="text-body" id="displayName">{{ $user['name'] }}</span>
                         </div>
                     </div>
 
@@ -100,7 +100,7 @@
                             <span class="text-muted">Email ID</span>
                         </div>
                         <div class="col-sm-9">
-                            <span class="text-body">{{ $user['email'] }}</span>
+                            <span class="text-body" id="displayEmail">{{ $user['email'] }}</span>
                         </div>
                     </div>
 
@@ -109,7 +109,7 @@
                             <span class="text-muted">User Role</span>
                         </div>
                         <div class="col-sm-9">
-                            <span class="text-body">{{ $user['role'] }}</span>
+                            <span class="text-body" id="displayRole">{{ $user['role'] }}</span>
                         </div>
                     </div>
                 </div>
@@ -189,6 +189,64 @@
     </div>
 </div>
 
+<!-- Edit Personal Details Modal -->
+<div class="modal fade" id="editPersonalDetailsModal" tabindex="-1" role="dialog" aria-labelledby="editPersonalDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPersonalDetailsModalLabel">Edit Personal Details</h5>
+                <button type="button" class="close" id="closeModalBtn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPersonalDetailsForm" class="needs-validation" novalidate>
+                    <div class="form-group mb-3">
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="editName" 
+                               value="{{ $user['name'] }}"
+                               required>
+                        <div class="invalid-feedback">
+                            Please enter your name.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="editEmail" class="form-label">Email ID</label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="editEmail" 
+                               value="{{ $user['email'] }}"
+                               required>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="editRole" class="form-label">User Role</label>
+                        <select class="form-control" id="editRole" required>
+                            <option value="admin" {{ $user['role'] === 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="doctor" {{ $user['role'] === 'doctor' ? 'selected' : '' }}>Doctor</option>
+                            <option value="pharmacist" {{ $user['role'] === 'pharmacist' ? 'selected' : '' }}>Pharmacist</option>
+                            <option value="supplier" {{ $user['role'] === 'supplier' ? 'selected' : '' }}>Supplier</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a user role.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePersonalDetailsBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Minimal scoped styles for exact design match */
 .nav-tabs .nav-link.active {
@@ -219,6 +277,58 @@
 .btn-primary:hover {
     background-color: #138496;
     border-color: #117a8b;
+}
+
+/* Modal styling */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+}
+
+.modal-backdrop.fade {
+    opacity: 0;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+
+.modal.show {
+    display: block !important;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: 0;
+}
+
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 0.5rem;
+    pointer-events: none;
+}
+
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 500px;
+        margin: 1.75rem auto;
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
 }
 </style>
 
@@ -349,6 +459,158 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
             }
+        });
+    }
+    
+    // Personal Details Edit functionality
+    const editPersonalDetailsBtn = document.getElementById('editPersonalDetailsBtn');
+    const savePersonalDetailsBtn = document.getElementById('savePersonalDetailsBtn');
+    const editPersonalDetailsForm = document.getElementById('editPersonalDetailsForm');
+    const editPersonalDetailsModal = document.getElementById('editPersonalDetailsModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    
+    // Modal functions
+    function showModal() {
+        editPersonalDetailsModal.style.display = 'block';
+        editPersonalDetailsModal.classList.add('show');
+        document.body.classList.add('modal-open');
+        
+        // Add backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        backdrop.id = 'modalBackdrop';
+        document.body.appendChild(backdrop);
+    }
+    
+    function hideModal() {
+        editPersonalDetailsModal.style.display = 'none';
+        editPersonalDetailsModal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        
+        // Remove backdrop
+        const backdrop = document.getElementById('modalBackdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        
+        // Reset form validation states
+        const editName = document.getElementById('editName');
+        const editEmail = document.getElementById('editEmail');
+        const editRole = document.getElementById('editRole');
+        
+        [editName, editEmail, editRole].forEach(input => {
+            input.classList.remove('is-invalid', 'is-valid');
+        });
+        editPersonalDetailsForm.classList.remove('was-validated');
+    }
+    
+    // Event listeners
+    if (editPersonalDetailsBtn) {
+        editPersonalDetailsBtn.addEventListener('click', function() {
+            showModal();
+        });
+    }
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            hideModal();
+        });
+    }
+    
+    if (cancelModalBtn) {
+        cancelModalBtn.addEventListener('click', function() {
+            hideModal();
+        });
+    }
+    
+    // Close modal when clicking outside
+    if (editPersonalDetailsModal) {
+        editPersonalDetailsModal.addEventListener('click', function(e) {
+            if (e.target === editPersonalDetailsModal) {
+                hideModal();
+            }
+        });
+    }
+    
+    if (savePersonalDetailsBtn && editPersonalDetailsForm) {
+        savePersonalDetailsBtn.addEventListener('click', function() {
+            const editName = document.getElementById('editName');
+            const editEmail = document.getElementById('editEmail');
+            const editRole = document.getElementById('editRole');
+            
+            // Reset previous validation states
+            [editName, editEmail, editRole].forEach(input => {
+                input.classList.remove('is-invalid', 'is-valid');
+            });
+            
+            let isValid = true;
+            
+            // Validate name
+            if (!editName.value.trim()) {
+                editName.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                editName.classList.add('is-valid');
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!editEmail.value.trim() || !emailRegex.test(editEmail.value)) {
+                editEmail.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                editEmail.classList.add('is-valid');
+            }
+            
+            // Validate role
+            if (!editRole.value) {
+                editRole.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                editRole.classList.add('is-valid');
+            }
+            
+            if (isValid) {
+                // Show loading state
+                const originalText = savePersonalDetailsBtn.innerHTML;
+                savePersonalDetailsBtn.innerHTML = 'Saving...';
+                savePersonalDetailsBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Update the display values
+                    document.getElementById('displayName').textContent = editName.value;
+                    document.getElementById('displayEmail').textContent = editEmail.value;
+                    
+                    // Format role for display
+                    const roleDisplayMap = {
+                        'admin': 'Admin',
+                        'doctor': 'Doctor',
+                        'pharmacist': 'Pharmacist',
+                        'supplier': 'Supplier'
+                    };
+                    document.getElementById('displayRole').textContent = roleDisplayMap[editRole.value] || editRole.value;
+                    
+                    // Update profile header
+                    const profileNameHeader = document.querySelector('.card-body h4');
+                    const profileEmailHeader = document.querySelector('.card-body p.text-muted');
+                    if (profileNameHeader) profileNameHeader.textContent = editName.value;
+                    if (profileEmailHeader) profileEmailHeader.textContent = editEmail.value;
+                    
+                    // Reset button
+                    savePersonalDetailsBtn.innerHTML = originalText;
+                    savePersonalDetailsBtn.disabled = false;
+                    
+                    // Close modal
+                    hideModal();
+                    
+                    // Show success message
+                    alert('Personal details updated successfully!');
+                }, 1500);
+            }
+            
+            editPersonalDetailsForm.classList.add('was-validated');
         });
     }
 });
