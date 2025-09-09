@@ -27,3 +27,5 @@ Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name(
 
 Route::get('/dashboard/products/add', [DashboardController::class, 'addProduct'])->name('dashboard.products.add');
 Route::get('/dashboard/users/add', [DashboardController::class, 'addUser'])->name('dashboard.users.add');
+
+Route::get('/dashboard/sale/create', [DashboardController::class, 'createSale'])->name('dashboard.sale.create');
