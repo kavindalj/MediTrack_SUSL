@@ -101,7 +101,17 @@ class DashboardController extends Controller
     }
     public function profile()
     {
-        return view('dashboard.profile');
+        // Sample user data - replace with actual authenticated user data
+        $user = [
+            'name' => 'Jamal Doe',
+            'email' => 'admin@meditrack.com',
+            'role' => 'admin',
+            'avatar' => null, // Will use placeholder for now
+            'created_at' => '2025-09-09',
+            'updated_at' => now()
+        ];
+
+        return view('dashboard.profile', compact('user'));
     }
     public function addProduct()
     {
