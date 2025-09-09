@@ -3,6 +3,93 @@
 @section('title', 'MediTrack Dashboard')
 @section('page-title', 'Profile')
 
+@section('styles')
+<style>
+    /* Minimal scoped styles for exact design match */
+    .nav-tabs .nav-link.active {
+        background-color: rgba(23, 162, 184, 0.1);
+        border-color: transparent transparent #17a2b8 transparent;
+        color: #17a2b8 !important;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #17a2b8;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .font-weight-semibold {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-primary:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
+
+    /* Modal styling */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+    }
+
+    .modal-backdrop.fade {
+        opacity: 0;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.5;
+    }
+
+    .modal.show {
+        display: block !important;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1050;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        outline: 0;
+    }
+
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 0.5rem;
+        pointer-events: none;
+    }
+
+    @media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 500px;
+            margin: 1.75rem auto;
+        }
+    }
+
+    body.modal-open {
+        overflow: hidden;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <!-- Breadcrumb -->
@@ -14,9 +101,6 @@
             <li class="breadcrumb-item active" aria-current="page">Profile</li>
         </ol>
     </nav>
-
-    <!-- Page Title -->
-    <h1 class="h3 mb-4 font-weight-semibold">Profile</h1>
 
     <!-- Profile Card -->
     <div class="card shadow-sm border-0 mb-4">
@@ -246,373 +330,153 @@
         </div>
     </div>
 </div>
+@endsection
 
-<style>
-/* Minimal scoped styles for exact design match */
-.nav-tabs .nav-link.active {
-    background-color: rgba(23, 162, 184, 0.1);
-    border-color: transparent transparent #17a2b8 transparent;
-    color: #17a2b8 !important;
-    font-weight: 500;
-}
-
-.nav-tabs .nav-link:hover {
-    border-color: transparent;
-    color: #17a2b8;
-}
-
-.nav-tabs {
-    border-bottom: 1px solid #dee2e6;
-}
-
-.font-weight-semibold {
-    font-weight: 600;
-}
-
-.btn-primary {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-}
-
-.btn-primary:hover {
-    background-color: #138496;
-    border-color: #117a8b;
-}
-
-/* Modal styling */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1040;
-    width: 100vw;
-    height: 100vh;
-    background-color: #000;
-}
-
-.modal-backdrop.fade {
-    opacity: 0;
-}
-
-.modal-backdrop.show {
-    opacity: 0.5;
-}
-
-.modal.show {
-    display: block !important;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1050;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    outline: 0;
-}
-
-.modal-dialog {
-    position: relative;
-    width: auto;
-    margin: 0.5rem;
-    pointer-events: none;
-}
-
-@media (min-width: 576px) {
-    .modal-dialog {
-        max-width: 500px;
-        margin: 1.75rem auto;
-    }
-}
-
-body.modal-open {
-    overflow: hidden;
-}
-</style>
-
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching functionality
-    const tabLinks = document.querySelectorAll('[data-toggle="tab"]');
-    
-    tabLinks.forEach(function(tabLink) {
-        tabLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all tabs and panes
-            tabLinks.forEach(function(link) {
-                link.classList.remove('active');
-                link.setAttribute('aria-selected', 'false');
-                link.style.color = '';
-                link.style.borderBottom = '';
-                link.style.backgroundColor = '';
-            });
-            
-            document.querySelectorAll('.tab-pane').forEach(function(pane) {
-                pane.classList.remove('show', 'active');
-            });
-            
-            // Add active class to clicked tab
-            this.classList.add('active');
-            this.setAttribute('aria-selected', 'true');
-            this.style.color = '#17a2b8';
-            this.style.borderBottom = '2px solid #17a2b8';
-            this.style.backgroundColor = 'rgba(23, 162, 184, 0.1)';
-            
-            // Show corresponding pane
-            const targetPane = document.querySelector(this.getAttribute('href'));
-            if (targetPane) {
-                targetPane.classList.add('show', 'active');
-            }
-        });
+    // ========== TAB SWITCHING FUNCTIONALITY ==========
+    const aboutTab = document.getElementById('about-tab');
+    const passwordTab = document.getElementById('password-tab');
+    const aboutContent = document.getElementById('about');
+    const passwordContent = document.getElementById('password');
+
+    function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
+        // Update tab appearance
+        activeTab.classList.add('active');
+        activeTab.style.color = '#17a2b8';
+        activeTab.style.borderBottom = '2px solid #17a2b8';
+        activeTab.setAttribute('aria-selected', 'true');
+        
+        inactiveTab.classList.remove('active');
+        inactiveTab.style.color = '#6c757d';
+        inactiveTab.style.borderBottom = 'none';
+        inactiveTab.setAttribute('aria-selected', 'false');
+        
+        // Update content visibility
+        activeContent.classList.add('show', 'active');
+        inactiveContent.classList.remove('show', 'active');
+    }
+
+    aboutTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        switchTab(aboutTab, aboutContent, passwordTab, passwordContent);
     });
-    
-    // Handle URL hash on page load
-    if (window.location.hash === '#password') {
-        document.getElementById('password-tab').click();
-    }
-    
-    // Password form validation
-    const passwordForm = document.getElementById('passwordForm');
-    
-    if (passwordForm) {
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
 
-            const currentPassword = document.getElementById('currentPassword');
-            const newPassword = document.getElementById('newPassword');
-            const confirmPassword = document.getElementById('confirmPassword');
+    passwordTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        switchTab(passwordTab, passwordContent, aboutTab, aboutContent);
+    });
 
-            // Reset previous validation states
-            [currentPassword, newPassword, confirmPassword].forEach(input => {
-                input.classList.remove('is-invalid', 'is-valid');
-            });
+    // ========== MODAL FUNCTIONALITY ==========
+    const editBtn = document.getElementById('editPersonalDetailsBtn');
+    const modal = document.getElementById('editPersonalDetailsModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const saveBtn = document.getElementById('savePersonalDetailsBtn');
 
-            let isValid = true;
-
-            // Validate current password
-            if (!currentPassword.value.trim()) {
-                currentPassword.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                currentPassword.classList.add('is-valid');
-            }
-
-            // Validate new password
-            if (!newPassword.value.trim() || newPassword.value.length < 8) {
-                newPassword.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                newPassword.classList.add('is-valid');
-            }
-
-            // Validate confirm password
-            if (!confirmPassword.value.trim() || confirmPassword.value !== newPassword.value) {
-                confirmPassword.classList.add('is-invalid');
-                if (confirmPassword.value !== newPassword.value) {
-                    confirmPassword.nextElementSibling.textContent = 'Passwords do not match.';
-                }
-                isValid = false;
-            } else {
-                confirmPassword.classList.add('is-valid');
-            }
-
-            if (isValid) {
-                // Show loading state
-                const submitBtn = passwordForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = 'Updating...';
-                submitBtn.disabled = true;
-
-                // Simulate API call
-                setTimeout(() => {
-                    // Reset form
-                    passwordForm.reset();
-                    [currentPassword, newPassword, confirmPassword].forEach(input => {
-                        input.classList.remove('is-invalid', 'is-valid');
-                    });
-
-                    // Reset button
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-
-                    // Show success message
-                    alert('Password updated successfully!');
-                }, 2000);
-            }
-
-            passwordForm.classList.add('was-validated');
-        });
-
-        // Real-time password confirmation validation
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = this.value;
-            
-            if (confirmPassword && newPassword !== confirmPassword) {
-                this.classList.add('is-invalid');
-                this.nextElementSibling.textContent = 'Passwords do not match.';
-            } else if (confirmPassword && newPassword === confirmPassword) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            }
-        });
-    }
-    
-    // Personal Details Edit functionality
-    const editPersonalDetailsBtn = document.getElementById('editPersonalDetailsBtn');
-    const savePersonalDetailsBtn = document.getElementById('savePersonalDetailsBtn');
-    const editPersonalDetailsForm = document.getElementById('editPersonalDetailsForm');
-    const editPersonalDetailsModal = document.getElementById('editPersonalDetailsModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
-    
-    // Modal functions
-    function showModal() {
-        editPersonalDetailsModal.style.display = 'block';
-        editPersonalDetailsModal.classList.add('show');
+    // Show modal
+    editBtn.addEventListener('click', function() {
+        modal.style.display = 'block';
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('modal-open');
         
-        // Add backdrop
+        // Create backdrop
         const backdrop = document.createElement('div');
         backdrop.className = 'modal-backdrop fade show';
-        backdrop.id = 'modalBackdrop';
+        backdrop.id = 'modal-backdrop';
         document.body.appendChild(backdrop);
-    }
-    
+    });
+
+    // Hide modal function
     function hideModal() {
-        editPersonalDetailsModal.style.display = 'none';
-        editPersonalDetailsModal.classList.remove('show');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('modal-open');
         
         // Remove backdrop
-        const backdrop = document.getElementById('modalBackdrop');
+        const backdrop = document.getElementById('modal-backdrop');
         if (backdrop) {
             backdrop.remove();
         }
-        
-        // Reset form validation states
-        const editName = document.getElementById('editName');
-        const editEmail = document.getElementById('editEmail');
-        const editRole = document.getElementById('editRole');
-        
-        [editName, editEmail, editRole].forEach(input => {
-            input.classList.remove('is-invalid', 'is-valid');
-        });
-        editPersonalDetailsForm.classList.remove('was-validated');
     }
-    
-    // Event listeners
-    if (editPersonalDetailsBtn) {
-        editPersonalDetailsBtn.addEventListener('click', function() {
-            showModal();
-        });
-    }
-    
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
+
+    // Hide modal events
+    closeBtn.addEventListener('click', hideModal);
+    cancelBtn.addEventListener('click', hideModal);
+
+    // Click outside modal to close
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
             hideModal();
-        });
-    }
-    
-    if (cancelModalBtn) {
-        cancelModalBtn.addEventListener('click', function() {
+        }
+    });
+
+    // Save changes
+    saveBtn.addEventListener('click', function() {
+        const form = document.getElementById('editPersonalDetailsForm');
+        if (form.checkValidity()) {
+            // Get form values
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const role = document.getElementById('editRole').value;
+            
+            // Update display values
+            document.getElementById('displayName').textContent = name;
+            document.getElementById('displayEmail').textContent = email;
+            document.getElementById('displayRole').textContent = role;
+            
+            // Hide modal
             hideModal();
-        });
-    }
+            
+            // Show success message (you can implement actual API call here)
+            alert('Personal details updated successfully!');
+        } else {
+            form.classList.add('was-validated');
+        }
+    });
+
+    // ========== PASSWORD FORM VALIDATION ==========
+    const passwordForm = document.getElementById('passwordForm');
     
-    // Close modal when clicking outside
-    if (editPersonalDetailsModal) {
-        editPersonalDetailsModal.addEventListener('click', function(e) {
-            if (e.target === editPersonalDetailsModal) {
-                hideModal();
-            }
-        });
-    }
-    
-    if (savePersonalDetailsBtn && editPersonalDetailsForm) {
-        savePersonalDetailsBtn.addEventListener('click', function() {
-            const editName = document.getElementById('editName');
-            const editEmail = document.getElementById('editEmail');
-            const editRole = document.getElementById('editRole');
-            
-            // Reset previous validation states
-            [editName, editEmail, editRole].forEach(input => {
-                input.classList.remove('is-invalid', 'is-valid');
-            });
-            
-            let isValid = true;
-            
-            // Validate name
-            if (!editName.value.trim()) {
-                editName.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                editName.classList.add('is-valid');
-            }
-            
-            // Validate email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!editEmail.value.trim() || !emailRegex.test(editEmail.value)) {
-                editEmail.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                editEmail.classList.add('is-valid');
-            }
-            
-            // Validate role
-            if (!editRole.value) {
-                editRole.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                editRole.classList.add('is-valid');
-            }
-            
-            if (isValid) {
-                // Show loading state
-                const originalText = savePersonalDetailsBtn.innerHTML;
-                savePersonalDetailsBtn.innerHTML = 'Saving...';
-                savePersonalDetailsBtn.disabled = true;
-                
-                // Simulate API call
-                setTimeout(() => {
-                    // Update the display values
-                    document.getElementById('displayName').textContent = editName.value;
-                    document.getElementById('displayEmail').textContent = editEmail.value;
-                    
-                    // Format role for display
-                    const roleDisplayMap = {
-                        'admin': 'Admin',
-                        'doctor': 'Doctor',
-                        'pharmacist': 'Pharmacist',
-                        'supplier': 'Supplier'
-                    };
-                    document.getElementById('displayRole').textContent = roleDisplayMap[editRole.value] || editRole.value;
-                    
-                    // Update profile header
-                    const profileNameHeader = document.querySelector('.card-body h4');
-                    const profileEmailHeader = document.querySelector('.card-body p.text-muted');
-                    if (profileNameHeader) profileNameHeader.textContent = editName.value;
-                    if (profileEmailHeader) profileEmailHeader.textContent = editEmail.value;
-                    
-                    // Reset button
-                    savePersonalDetailsBtn.innerHTML = originalText;
-                    savePersonalDetailsBtn.disabled = false;
-                    
-                    // Close modal
-                    hideModal();
-                    
-                    // Show success message
-                    alert('Personal details updated successfully!');
-                }, 1500);
-            }
-            
-            editPersonalDetailsForm.classList.add('was-validated');
-        });
-    }
+    passwordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Reset custom validity
+        document.getElementById('confirmPassword').setCustomValidity('');
+        
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            document.getElementById('confirmPassword').setCustomValidity('Passwords do not match');
+        }
+        
+        if (passwordForm.checkValidity()) {
+            // Here you would typically send the data to your backend
+            alert('Password updated successfully!');
+            passwordForm.reset();
+            passwordForm.classList.remove('was-validated');
+        } else {
+            passwordForm.classList.add('was-validated');
+        }
+    });
+
+    // Real-time password confirmation validation
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = this.value;
+        
+        if (newPassword !== confirmPassword) {
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
 });
 </script>
 @endsection
