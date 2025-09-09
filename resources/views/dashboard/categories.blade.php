@@ -19,19 +19,49 @@
         font-size: 0.8rem;
     }
     
-    .btn-edit {
+    /* .btn-edit {
         background-color: #e7f8e9;
         color: #28a745;
         border: none;
-    }
+    } */
     
-    .btn-delete {
+    /* .btn-delete {
         background-color: #ffe7e7;
         color: #dc3545;
         border: none;
+    } */
+    /* wf */
+.btn-action {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border-radius: 4px;
+        border: none;
+        margin: 0 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-edit {
+        background-color: #00bcd4;
+        color: white;
+    }
+    .btn-edit:hover {
+        background-color: #00acc1;
+        color: white;
+    }
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+    .btn-delete:hover {
+        background-color: #c82333;
+        color: white;
     }
     
-    
+    /* dddd */
     .pagination {
         margin-bottom: 0;
     }
@@ -162,11 +192,11 @@
                                 <td>{{ $category->created_at->format('d-M-Y-H:i') }}</td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn btn-edit edit-category" data-id="{{ $category->id }}">
-                                            <i class="fas fa-edit me-1"></i> Edit
+                                        <button class="btn btn-action btn-edit" data-id="{{ $category->id }}">
+                                            <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-delete delete-category" data-id="{{ $category->id }}">
-                                            <i class="fas fa-trash-alt me-1"></i> Delete
+                                        <button class="btn btn-action btn-delete" data-id="{{ $category->id }}">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                 </td>
