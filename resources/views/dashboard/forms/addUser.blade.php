@@ -143,13 +143,19 @@
     <div class="row">
         <div class="col-12">
             <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="mb-4">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add Users</li>
-                </ol>
-            </nav>
+    <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ route('dashboard') }}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="#">Users</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Add Users
+        </li>
+    </ol>
+</nav>
 
             <div class="add-user-container">
                 <h4 class="mb-4" style="color: var(--dark);">Add New User</h4>
@@ -192,8 +198,8 @@
                                 @else
                                     <!-- Fallback if no roles are provided -->
                                     <option value="admin">Admin</option>
-                                    <option value="pharmacist">Pharmacist</option>
-                                    <option value="salesperson">Salesperson</option>
+                                    <option value="user">User</option>
+                                
                                 @endif
                             </select>
                             <div class="invalid-feedback" id="roleError">
