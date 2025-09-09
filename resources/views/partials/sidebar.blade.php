@@ -1,8 +1,8 @@
 <div class="sidebar">
     <div class="p-3">
         <!-- Logo -->
-        <a href="{{ url('/dashboard') }}" class="logo d-flex align-items-center mb-4">
-            <i class="fas fa-plus-circle"></i>
+        <a href="{{ url('/dashboard') }}" class="logo d-flex align-items-center mb-4 ms-2 mt-2">
+            <img src="{{ asset('images/logo-white.png') }}" alt="MediTrack Logo" class="me-2" style="height: 42px; width: auto;">
             MediTrack
         </a>
         
