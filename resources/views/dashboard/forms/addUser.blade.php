@@ -4,7 +4,7 @@
 @section('page-title', 'Add User')
 
 @section('styles')
-
+<!-- add custom styles here if needed -->
 <style>
 .add-user-container {
     background: #fff;
@@ -116,10 +116,29 @@
 .breadcrumb-item.active {
     color: #6c757d;
 }
+
+/* Validation Styles */
+.is-invalid {
+    border-color: var(--danger) !important;
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: var(--danger);
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.form-control.is-invalid ~ .invalid-feedback {
+    display: block;
+}
 </style>
 @endsection
 
 @section('content')
+<!-- make add user form here -->
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -135,14 +154,17 @@
             <div class="add-user-container">
                 <h4 class="mb-4" style="color: var(--dark);">Add New User</h4>
 
-                <form id="addUserForm">
+                <form id="addUserForm" class="needs-validation" novalidate>
                     @csrf
                     
                     <!-- Name Section -->
                     <div class="form-section">
                         <h5 class="form-section-title">Name <span class="required-field"></span></h5>
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name" required>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name" required minlength="2">
+                            <div class="invalid-feedback" id="nameError">
+                                Please provide a valid name (at least 2 characters).
+                            </div>
                         </div>
                     </div>
 
@@ -150,33 +172,39 @@
                     <div class="form-section">
                         <h5 class="form-section-title">Email <span class="required-field"></span></h5>
                         <div class="mb-3">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                            <div class="invalid-feedback" id="emailError">
+                                Please provide a valid email address.
+                            </div>
                         </div>
                     </div>
 
                     <!-- Role Section (Dropdown) -->
-                    <div class="form-section">
+                   <div class="form-section">
                         <h5 class="form-section-title">Role <span class="required-field"></span></h5>
                         <div class="mb-3">
                             <select class="form-select" id="role" name="role" required>
-                                <option value="">Select a role</option>
+                                <option value="" selected disabled>Select Role</option>
                                 @if(isset($roles) && is_array($roles))
                                     @foreach($roles as $value => $label)
-                                        <option value="{{ $value }}" {{ $value == 'admin' ? 'selected' : '' }}>{{ $label }}</option>
+                                        <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 @else
                                     <!-- Fallback if no roles are provided -->
-                                    <option value="admin" selected>Admin</option>
+                                    <option value="admin">Admin</option>
                                     <option value="pharmacist">Pharmacist</option>
                                     <option value="salesperson">Salesperson</option>
                                 @endif
                             </select>
+                            <div class="invalid-feedback" id="roleError">
+                                Please select a role.
+                            </div>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adminAuthModal">
+                        <button type="button" class="btn btn-primary" id="validateAndOpenModal">
                             Add User
                         </button>
                     </div>
@@ -185,6 +213,7 @@
         </div>
     </div>
 </div>
+
 <!-- Admin Authentication Modal -->
 <div class="modal fade" id="adminAuthModal" tabindex="-1" aria-labelledby="adminAuthModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -197,8 +226,10 @@
                 <p>To add a new user, please confirm your admin password:</p>
                 <div class="mb-3">
                     <label for="adminPassword" class="form-label">Admin Password</label>
-                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter your password">
-                    <div id="passwordError" class="text-danger mt-1" style="display: none;">Incorrect password. Please try again.</div>
+                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter your password" required>
+                    <div id="passwordError" class="invalid-feedback">
+                        Password cannot be empty.
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -228,10 +259,8 @@
 </div>
 @endsection
 
-
-
 @section('scripts')
-
+<!-- add custom scripts here if needed -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const adminAuthModal = document.getElementById('adminAuthModal');
@@ -239,11 +268,97 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordError = document.getElementById('passwordError');
     const confirmAddUserBtn = document.getElementById('confirmAddUser');
     const addUserForm = document.getElementById('addUserForm');
+    const validateAndOpenModalBtn = document.getElementById('validateAndOpenModal');
     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const authModal = new bootstrap.Modal(adminAuthModal);
+    
+    // Form validation function
+    function validateForm() {
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const roleSelect = document.getElementById('role');
+        let isValid = true;
+        
+        // Reset validation states
+        addUserForm.classList.remove('was-validated');
+        nameInput.classList.remove('is-invalid');
+        emailInput.classList.remove('is-invalid');
+        roleSelect.classList.remove('is-invalid');
+        
+        // Validate name
+        if (!nameInput.value.trim() || nameInput.value.trim().length < 2) {
+            nameInput.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Validate email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailInput.value || !emailRegex.test(emailInput.value)) {
+            emailInput.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Validate role
+        if (!roleSelect.value) {
+            roleSelect.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            addUserForm.classList.add('was-validated');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Real-time email validation
+    document.getElementById('email').addEventListener('blur', function() {
+        const emailInput = this;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        
+        if (emailInput.value && !emailRegex.test(emailInput.value)) {
+            emailInput.classList.add('is-invalid');
+            document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+        } else {
+            emailInput.classList.remove('is-invalid');
+        }
+    });
+    
+    // Real-time name validation
+    document.getElementById('name').addEventListener('blur', function() {
+        const nameInput = this;
+        
+        if (nameInput.value && nameInput.value.trim().length < 2) {
+            nameInput.classList.add('is-invalid');
+            document.getElementById('nameError').textContent = 'Name must be at least 2 characters long.';
+        } else {
+            nameInput.classList.remove('is-invalid');
+        }
+    });
+    
+    // Real-time role validation
+    document.getElementById('role').addEventListener('change', function() {
+        const roleSelect = this;
+        
+        if (!roleSelect.value) {
+            roleSelect.classList.add('is-invalid');
+        } else {
+            roleSelect.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validate form and open modal
+    validateAndOpenModalBtn.addEventListener('click', function() {
+        if (validateForm()) {
+            authModal.show();
+        }
+    });
     
     // Clear password field when modal is shown
     adminAuthModal.addEventListener('show.bs.modal', function () {
         adminPasswordInput.value = '';
+        adminPasswordInput.classList.remove('is-invalid');
         passwordError.style.display = 'none';
     });
     
@@ -253,8 +368,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Simple validation
         if (password === '') {
-            passwordError.textContent = 'Password cannot be empty';
+            adminPasswordInput.classList.add('is-invalid');
             passwordError.style.display = 'block';
+            passwordError.textContent = 'Password cannot be empty';
             return;
         }
         
@@ -264,21 +380,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isAuthenticated) {
             // Hide error if shown
+            adminPasswordInput.classList.remove('is-invalid');
             passwordError.style.display = 'none';
             
             // Close the auth modal
-            const modal = bootstrap.Modal.getInstance(adminAuthModal);
-            modal.hide();
+            authModal.hide();
             
             // Show success message
             successModal.show();
             
             // Reset the form
             addUserForm.reset();
+            addUserForm.classList.remove('was-validated');
             
-            // Reset the role dropdown to default
-            document.getElementById('role').value = 'admin';
+           // Reset the role dropdown to default "Select Role"
+            document.getElementById('role').selectedIndex = 0;
         } else {
+            adminPasswordInput.classList.add('is-invalid');
             passwordError.textContent = 'Incorrect password. Please try again.';
             passwordError.style.display = 'block';
         }
