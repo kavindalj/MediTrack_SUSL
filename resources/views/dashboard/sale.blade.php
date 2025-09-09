@@ -589,9 +589,9 @@
                     });
                     
                     // Set totals
-                    $('#subtotal').text(Rs. ${saleData.subtotal.toFixed(2)});
-                    $('#tax').text(Rs. ${saleData.tax.toFixed(2)});
-                    $('#total').text(Rs. ${saleData.total.toFixed(2)});
+                    $('#subtotal').text(`Rs. ${saleData.subtotal.toFixed(2)}`);
+                    $('#tax').text(`Rs. ${saleData.tax.toFixed(2)}`);
+                    $('#total').text(`Rs. ${saleData.total.toFixed(2)}`);
                     
                     // Set notes
                     if (saleData.notes) {
@@ -603,24 +603,7 @@
                         saleModal.show();
                     }
                     
-                    /* In a real application, you would use AJAX:
-                    $.ajax({
-                        url: '/dashboard/sales/' + saleId,
-                        type: 'GET',
-                        data: {
-                            _token: getCSRFToken()
-                        },
-                        success: function(response) {
-                            // Populate modal with real data
-                            $('#invoice-no').text(response.invoice_no);
-                            ...
-                        },
-                        error: function(error) {
-                            console.error(error);
-                            showToast('Error loading sale details', 'danger');
-                        }
-                    });
-                    */
+                    
                 }, 800);
             });
             
@@ -666,26 +649,7 @@
                     // Show success message
                     showToast('Sale deleted successfully', 'success');
                     
-                    /* In a real application, you would use AJAX:
-                    $.ajax({
-                        url: '/dashboard/sales/' + saleId,
-                        type: 'DELETE',
-                        data: {
-                            _token: getCSRFToken()
-                        },
-                        success: function(response) {
-                            showToast('Sale deleted successfully', 'success');
-                        },
-                        error: function(error) {
-                            console.error(error);
-                            showToast('Error deleting sale', 'danger');
-                        },
-                        complete: function() {
-                            $(this).html('Delete');
-                            $(this).prop('disabled', false);
-                        }
-                    });
-                    */
+                    
                 }, 800);
             });
             

@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const price = parseFloat(document.getElementById('itemPrice').value) || 0;
         const qty = parseInt(document.getElementById('itemQuantity').value) || 0;
         const total = price * qty;
-        document.getElementById('itemTotal').textContent = Rs. ${total.toFixed(2)};
+        document.getElementById('itemTotal').textContent = `Rs. ${total.toFixed(2)}`;
     }
     
     // Item selection change - update price
@@ -612,9 +612,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const tax = subtotal * taxRate;
         const total = subtotal + tax;
         
-        document.getElementById('subtotal').textContent = Rs. ${subtotal.toFixed(2)};
-        document.getElementById('tax').textContent = Rs. ${tax.toFixed(2)};
-        document.getElementById('total').textContent = Rs. ${total.toFixed(2)};
+        document.getElementById('subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
+        document.getElementById('tax').textContent = `Rs. ${tax.toFixed(2)}`;
+        document.getElementById('total').textContent = `Rs. ${total.toFixed(2)}`;
         
         // Update hidden inputs for form submission
         document.getElementById('subtotalInput').value = subtotal.toFixed(2);

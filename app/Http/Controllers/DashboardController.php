@@ -295,7 +295,7 @@ class DashboardController extends Controller
         );
         
         return view('dashboard.sale', compact('sales'));
-    }
+    }
 
 
     public function users()
@@ -379,5 +379,5 @@ class DashboardController extends Controller
         ];
         
         return view('dashboard.forms.addSale', compact('medicines'));
-    }
+}
 }
