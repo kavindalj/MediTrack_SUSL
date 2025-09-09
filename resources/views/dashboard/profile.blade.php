@@ -87,16 +87,52 @@
     body.modal-open {
         overflow: hidden;
     }
+
+    /* Success Message Styling */
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .alert-success .fas {
+        color: #28a745;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        font-weight: bold;
+        line-height: 1;
+        color: #155724;
+        opacity: 0.7;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+    }
 </style>
 @endsection
 
 @section('content')
 <div class="container-fluid">
+    <!-- Success Message -->
+    <div id="successMessage" class="alert alert-success alert-dismissible fade d-none" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="successMessageText">Personal details updated successfully!</span>
+        <button type="button" class="btn-close" aria-label="Close" onclick="hideSuccessMessage()"></button>
+    </div>
+
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb bg-transparent p-0 mb-0">
             <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}" class="text-muted text-decoration-none">Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="text-decoration-none" style="color: #007bff;">Dashboard</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Profile</li>
         </ol>
@@ -107,12 +143,6 @@
         <div class="card-body p-4">
             <!-- Profile Header -->
             <div class="row align-items-center mb-4">
-                <div class="col-auto">
-                    <img src="{{ $user['avatar'] ?? asset('images/default-profile-icon.svg') }}" 
-                         alt="{{ $user['name'] }}" 
-                         class="rounded-circle"
-                         style="width: 64px; height: 64px; object-fit: cover;">
-                </div>
                 <div class="col">
                     <h4 class="mb-1 font-weight-semibold">{{ $user['name'] }}</h4>
                     <p class="text-muted mb-0">{{ $user['email'] }}</p>
@@ -313,9 +343,7 @@
                         <label for="editRole" class="form-label">User Role</label>
                         <select class="form-control" id="editRole" required>
                             <option value="admin" {{ $user['role'] === 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="doctor" {{ $user['role'] === 'doctor' ? 'selected' : '' }}>Doctor</option>
-                            <option value="pharmacist" {{ $user['role'] === 'pharmacist' ? 'selected' : '' }}>Pharmacist</option>
-                            <option value="supplier" {{ $user['role'] === 'supplier' ? 'selected' : '' }}>Supplier</option>
+                            <option value="user" {{ $user['role'] === 'user' ? 'selected' : '' }}>User</option>
                         </select>
                         <div class="invalid-feedback">
                             Please select a user role.
@@ -335,6 +363,33 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ========== SUCCESS MESSAGE FUNCTIONALITY ==========
+    function showSuccessMessage(message = 'Personal details updated successfully!') {
+        const successDiv = document.getElementById('successMessage');
+        const messageText = document.getElementById('successMessageText');
+        
+        messageText.textContent = message;
+        successDiv.classList.remove('d-none');
+        successDiv.classList.add('show');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(function() {
+            hideSuccessMessage();
+        }, 5000);
+        
+        // Scroll to top to ensure message is visible
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function hideSuccessMessage() {
+        const successDiv = document.getElementById('successMessage');
+        successDiv.classList.add('d-none');
+        successDiv.classList.remove('show');
+    }
+
+    // Make hideSuccessMessage available globally for the close button
+    window.hideSuccessMessage = hideSuccessMessage;
+
     // ========== TAB SWITCHING FUNCTIONALITY ==========
     const aboutTab = document.getElementById('about-tab');
     const passwordTab = document.getElementById('password-tab');
@@ -428,11 +483,17 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('displayEmail').textContent = email;
             document.getElementById('displayRole').textContent = role;
             
+            // Update profile header name
+            const profileHeaderName = document.querySelector('.card-body h4.font-weight-semibold');
+            if (profileHeaderName) {
+                profileHeaderName.textContent = name;
+            }
+            
             // Hide modal
             hideModal();
             
-            // Show success message (you can implement actual API call here)
-            alert('Personal details updated successfully!');
+            // Show success message
+            showSuccessMessage('Personal details updated successfully!');
         } else {
             form.classList.add('was-validated');
         }
@@ -458,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (passwordForm.checkValidity()) {
             // Here you would typically send the data to your backend
-            alert('Password updated successfully!');
+            showSuccessMessage('Password updated successfully!');
             passwordForm.reset();
             passwordForm.classList.remove('was-validated');
         } else {
