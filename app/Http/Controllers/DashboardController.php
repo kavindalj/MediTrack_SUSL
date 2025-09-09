@@ -66,7 +66,38 @@ class DashboardController extends Controller
     }
     public function users()
     {
-        return view('dashboard.users');
+        $EntryUser = [
+            [
+                'id' => 2,
+                'name' => 'Ernestina Stokes Sr.',
+                'email' => 'prosacco.viva@example.org',
+                'role' => 'admin',
+                'created_date' => '09 Feb, 2022'
+            ],
+            [
+                'id' => 3,
+                'name' => 'Jamal Admin',
+                'email' => 'admin@admin.com',
+                'role' => 'super-admin',
+                'created_date' => '08 Feb, 2022'
+            ],
+            [
+                'id' => 4,
+                'name' => 'Jermey Larkin V',
+                'email' => 'ruth.theron@example.net',
+                'role' => 'admin',
+                'created_date' => '09 Feb, 2022'
+            ],
+            [
+                'id' => 5,
+                'name' => 'Julie Mertz',
+                'email' => 'dgleason@example.net',
+                'role' => 'admin',
+                'created_date' => '09 Feb, 2022'
+            ]
+        ];
+
+        return view('dashboard.users', compact('EntryUser'));
     }
     public function profile()
     {
