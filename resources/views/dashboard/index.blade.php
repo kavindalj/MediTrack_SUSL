@@ -1,88 +1,113 @@
 @extends('layouts.app')
 
 @section('title', 'MediTrack Dashboard')
-@section('page-title', 'Welcome Jamal Admin!')
+@section('page-title', 'Welcome Kamal!')
 
 @section('styles')
 <style>
 .dashboard-card {
     border: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    height: 100%;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .dashboard-card .card-body {
-    padding: 1.5rem;
+    padding: 1.8rem;
+    position: relative;
 }
 
 .dashboard-card .card-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 .dashboard-card .card-icon i {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: white;
 }
 
 .dashboard-card .card-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #6c757d;
     margin-bottom: 0.5rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .dashboard-card .card-value {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #2c3e50;
     margin-bottom: 0;
+    line-height: 1.2;
 }
 
-/* Card variations */
+/* Card variations with better colors */
 .dashboard-card.card-cyan {
-    border-left: 4px solid var(--card-cyan);
+    border-left: 4px solid #17a2b8;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fdff 100%);
 }
 
 .dashboard-card.card-cyan .card-icon {
-    background-color: var(--card-cyan);
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
 }
 
 .dashboard-card.card-green {
-    border-left: 4px solid var(--card-green);
+    border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
 }
 
 .dashboard-card.card-green .card-icon {
-    background-color: var(--card-green);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
 }
 
 .dashboard-card.card-red {
-    border-left: 4px solid var(--card-red);
+    border-left: 4px solid #dc3545;
+    background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
 }
 
 .dashboard-card.card-red .card-icon {
-    background-color: var(--card-red);
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
 }
 
 .dashboard-card.card-yellow {
-    border-left: 4px solid var(--card-yellow);
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(135deg, #ffffff 0%, #fffdf5 100%);
 }
 
 .dashboard-card.card-yellow .card-icon {
-    background-color: var(--card-yellow);
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
 }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .dashboard-card .card-value {
+        font-size: 1.6rem;
+    }
+    
+    .dashboard-card .card-icon {
+        width: 45px;
+        height: 45px;
+    }
+}
 </style>
 @endsection
 
@@ -94,13 +119,13 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card dashboard-card card-cyan">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="card-title mb-2">Total Drugs</div>
+                            <div class="card-value">Rs {{ number_format($stats['total_drugs'], 2) }}</div>
+                        </div>
                         <div class="card-icon">
                             <i class="fas fa-pills"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="card-title">Total Drugs</div>
-                            <div class="card-value">Rs {{ number_format($stats['total_drugs'], 2) }}</div>
                         </div>
                     </div>
                 </div>
@@ -111,13 +136,13 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card dashboard-card card-green">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="card-title mb-2">Categories</div>
+                            <div class="card-value">{{ $stats['product_categories'] }}</div>
+                        </div>
                         <div class="card-icon">
                             <i class="fas fa-tags"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="card-title">Product Categories</div>
-                            <div class="card-value">{{ $stats['product_categories'] }}</div>
                         </div>
                     </div>
                 </div>
@@ -128,13 +153,13 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card dashboard-card card-red">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="card-title mb-2">Expired</div>
+                            <div class="card-value">{{ $stats['expired_products'] }}</div>
+                        </div>
                         <div class="card-icon">
                             <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="card-title">Expired Products</div>
-                            <div class="card-value">{{ $stats['expired_products'] }}</div>
                         </div>
                     </div>
                 </div>
@@ -145,13 +170,13 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card dashboard-card card-yellow">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="card-title mb-2">Users</div>
+                            <div class="card-value">{{ $stats['system_users'] }}</div>
+                        </div>
                         <div class="card-icon">
                             <i class="fas fa-users"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="card-title">System Users</div>
-                            <div class="card-value">{{ $stats['system_users'] }}</div>
                         </div>
                     </div>
                 </div>
