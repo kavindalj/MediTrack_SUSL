@@ -119,6 +119,12 @@ class DashboardController extends Controller
     }
     public function addUser()
     {
-        return view('dashboard.forms.addUser');
+        // Define available roles for the form (could come from database in real application)
+        $roles = [
+            'admin' => 'Admin',
+            'user' => 'User', 
+            
+        ];
+        return view('dashboard.forms.addUser', compact('roles'));
     }
 }
