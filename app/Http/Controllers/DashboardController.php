@@ -55,7 +55,7 @@ class DashboardController extends Controller
     }
 
     public function categories()
-{
+    {
     // Create a collection of categories
     $categoriesCollection = collect([
         (object) ['id' => 1, 'name' => 'Phytopathology', 'created_at' => now()->subDays(5)],
@@ -98,7 +98,7 @@ class DashboardController extends Controller
     );
     
     return view('dashboard.categories', compact('categories'));
-}
+    }
     public function products()
     {
             $products = [
@@ -420,10 +420,6 @@ class DashboardController extends Controller
         return redirect()->route('dashboard')->with('success', 'User added successfully.');
     }
 
-
-}
-
-
     public function createSale()
     {
         // Sample medicines data - in a real app, you'd fetch from the database
@@ -441,8 +437,6 @@ class DashboardController extends Controller
         ];
         
         return view('dashboard.forms.addSale', compact('medicines'));
-}
-}
-
+    }
 }
 
