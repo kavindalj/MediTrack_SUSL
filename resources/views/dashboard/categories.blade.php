@@ -398,7 +398,7 @@
         if (typeof jQuery !== 'undefined') {
             
             function getCategoryNameFromRow(categoryId) {
-                const row = $('button.edit-category[data-id="' + categoryId + '"]').closest('tr');
+                const row = $('button.btn-edit[data-id="' + categoryId + '"]').closest('tr');
                 if (row.length) {
                     return row.find('td:eq(1)').text().trim();
                 }
@@ -425,7 +425,7 @@
             });
             
             // Edit Category Button Click
-            $(document).on('click', '.edit-category', function(e) {
+            $(document).on('click', '.btn-edit', function(e) {
                 e.preventDefault();
                 const categoryId = $(this).data('id');
                 const categoryName = getCategoryNameFromRow(categoryId);
@@ -440,7 +440,7 @@
             });
             
             // Delete Category Button Click
-            $(document).on('click', '.delete-category', function(e) {
+            $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
                 const categoryId = $(this).data('id');
                 const categoryName = getCategoryNameFromRow(categoryId);
@@ -469,7 +469,7 @@
                     }
                     
                     // Remove the row from the table
-                    $('button.delete-category[data-id="' + categoryId + '"]').closest('tr').fadeOut(300, function() {
+                    $('button.btn-delete[data-id="' + categoryId + '"]').closest('tr').fadeOut(300, function() {
                         $(this).remove();
                         updateTableInfo();
                     });
@@ -527,7 +527,7 @@
             
             // Function to update a category in the table
             function updateCategoryInTable(categoryId, categoryName) {
-                const row = $('button.edit-category[data-id="' + categoryId + '"]').closest('tr');
+                const row = $('button.btn-edit[data-id="' + categoryId + '"]').closest('tr');
                 row.find('td:eq(1)').text(categoryName);
                 
                 // Optional: highlight the updated row
@@ -562,8 +562,8 @@
                 const actionCell = $('<td></td>');
                 const actionDiv = $('<div class="action-buttons"></div>');
                 
-                const editBtn = $('<button class="btn btn-edit edit-category" data-id="' + categoryId + '"><i class="fas fa-edit me-1"></i> Edit</button>');
-                const deleteBtn = $('<button class="btn btn-delete delete-category" data-id="' + categoryId + '"><i class="fas fa-trash-alt me-1"></i> Delete</button>');
+                const editBtn = $('<button class="btn btn-action btn-edit" data-id="' + categoryId + '"><i class="fas fa-edit"></i></button>');
+                const deleteBtn = $('<button class="btn btn-action btn-delete" data-id="' + categoryId + '"><i class="fas fa-trash"></i></button>');
                 
                 actionDiv.append(editBtn);
                 actionDiv.append(' ');
