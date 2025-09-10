@@ -20,14 +20,21 @@
                     <!-- User Dropdown -->
                     <div class="dropdown">
                         <a class="text-decoration-none btn btn-link d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                            <span class="text-dark fs-5">Kamal&nbsp;</span><span class="fs-6">(admin)</span>
+                            <span class="text-dark fs-5" id="navbar-user-name">{{ auth()->check() ? auth()->user()->name : 'Guest' }}&nbsp;</span><span class="fs-6" id="navbar-user-role">({{ auth()->check() ? auth()->user()->role : 'guest' }})</span>
                             <i class="fas fa-chevron-down ms-2 text-muted"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('dashboard.profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left;">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>
