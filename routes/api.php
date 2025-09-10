@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use App\Http\Controllers\DashboardController;
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/dashboard/products/add', [DashboardController::class, 'addProduct'])->name('api.dashboard.products.add');
