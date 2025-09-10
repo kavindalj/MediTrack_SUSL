@@ -160,7 +160,7 @@
             <div class="add-user-container">
                 <h4 class="mb-4" style="color: var(--dark);">Add New User</h4>
 
-                <form id="addUserForm" class="needs-validation" novalidate>
+                <form action="{{ route('dashboard.users.add.post') }}" method="POST" id="addUserForm" class="needs-validation" novalidate>
                     @csrf
                     
                     <!-- Name Section -->
@@ -204,6 +204,28 @@
                             </select>
                             <div class="invalid-feedback" id="roleError">
                                 Please select a role.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Password Section -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Password <span class="required-field"></span></h5>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required minlength="8">
+                            <div class="invalid-feedback" id="passwordError">
+                                Please provide a valid password (at least 8 characters).
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h5 class="form-section-title">Confirm Password <span class="required-field"></span></h5>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="confirmPassword" name="password_confirmation"" placeholder="Confirm password" required minlength="8">
+                            <div class="invalid-feedback" id="confirmPasswordError">
+                                Please provide a valid password (at least 8 characters).
+                            </div>
+                        </div>
+                    </div>
                             </div>
                         </div>
                     </div>
@@ -283,6 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
         const roleSelect = document.getElementById('role');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
         let isValid = true;
         
         // Reset validation states
@@ -290,6 +314,8 @@ document.addEventListener('DOMContentLoaded', function() {
         nameInput.classList.remove('is-invalid');
         emailInput.classList.remove('is-invalid');
         roleSelect.classList.remove('is-invalid');
+        password.classList.remove('is-invalid');
+        confirmPassword.classList.remove('is-invalid');
         
         // Validate name
         if (!nameInput.value.trim() || nameInput.value.trim().length < 2) {
@@ -307,6 +333,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate role
         if (!roleSelect.value) {
             roleSelect.classList.add('is-invalid');
+            isValid = false;
+        }
+        // Validate password
+        if (!password.value || password.value.length < 8) { 
+            password.classList.add('is-invalid');
+            document.getElementById('passwordError').textContent = 'Password must be at least 8 characters long.';
+            isValid = false;
+        }
+
+        // Validate confirm password
+        if (!confirmPassword.value || confirmPassword.value.length < 8) { 
+            confirmPassword.classList.add('is-invalid');
+            document.getElementById('confirmPasswordError').textContent = 'Confirm password must be at least 8 characters.';
+            isValid = false;
+        }
+
+        // Check if password and confirm password match
+        if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            document.getElementById('confirmPasswordError').textContent = 'Passwords do not match.';
             isValid = false;
         }
         
@@ -385,33 +431,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const isAuthenticated = (password === 'admin123');
         
         if (isAuthenticated) {
-            // Hide error if shown
-            adminPasswordInput.classList.remove('is-invalid');
-            passwordError.style.display = 'none';
-            
-            // Close the auth modal
-            authModal.hide();
-            
-            // Show success message
-            successModal.show();
-            
-            // Reset the form
-            addUserForm.reset();
-            addUserForm.classList.remove('was-validated');
-            
-           // Reset the role dropdown to default "Select Role"
-            document.getElementById('role').selectedIndex = 0;
+        // Close modal
+        authModal.hide();
+
+        // Remove the preventDefault listener
+        addUserForm.removeEventListener('submit', preventFormSubmit);
+
+        // Submit the form
+        addUserForm.submit();
+n
         } else {
             adminPasswordInput.classList.add('is-invalid');
             passwordError.textContent = 'Incorrect password. Please try again.';
             passwordError.style.display = 'block';
         }
     });
-    
-    // Form validation
-    addUserForm.addEventListener('submit', function(e) {
+
+    function preventFormSubmit(e) {
         e.preventDefault();
-    });
+    }
+        
+    // Form validation
+    addUserForm.addEventListener('submit', preventFormSubmit);
 });
 </script>
 @endsection
