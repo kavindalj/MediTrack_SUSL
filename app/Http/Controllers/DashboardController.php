@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -158,6 +160,7 @@ class DashboardController extends Controller
     {
         return view('dashboard.forms.addProduct');
     }
+
     public function addUser()
     {
         // Define available roles for the form (could come from database in real application)
@@ -168,4 +171,26 @@ class DashboardController extends Controller
         ];
         return view('dashboard.forms.addUser', compact('roles'));
     }
+
+    public function addUserPost(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|min:2',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'role' => 'required|string|in:admin,user',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'is_verified' => 1,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'User added successfully.');
+    }
+
+
 }
