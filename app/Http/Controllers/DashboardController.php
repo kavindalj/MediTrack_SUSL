@@ -99,7 +99,34 @@ class DashboardController extends Controller
 }
     public function products()
     {
-        return view('dashboard.products');
+            $products = [
+        [
+            'name' => 'Paracetamol',
+            'category' => 'Pain Relief',
+            'price' => 120.00,
+            'quantity' => 50,
+            'discount' => '0%',
+            'expiry_date' => '12 Dec, 2025',
+        ],
+        [
+            'name' => 'Amoxicillin',
+            'category' => 'Antibiotic',
+            'price' => 250.00,
+            'quantity' => 80,
+            'discount' => '5%',
+            'expiry_date' => '01 Jan, 2026',
+        ],
+        [
+            'name' => 'Cetirizine',
+            'category' => 'Allergy',
+            'price' => 90.00,
+            'quantity' => 120,
+            'discount' => '0%',
+            'expiry_date' => '05 May, 2026',
+        ],
+    ];
+
+    return view('dashboard.products', compact('products'));
     }
     public function sale()
     {
