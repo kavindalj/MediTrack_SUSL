@@ -183,7 +183,15 @@ class DashboardController extends Controller
     }
     public function addProduct()
     {
-        return view('dashboard.forms.addProduct');
+        $categories = [
+            'Painkillers',
+            'Antibiotics',
+            'Antiseptics',
+            'Antacids',
+            'Laxatives',
+            'Other'
+        ];
+        return view('dashboard.forms.addProduct', compact('categories'));
     }
     public function addUser()
     {
