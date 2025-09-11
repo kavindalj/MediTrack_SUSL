@@ -167,8 +167,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($EntryUser as $user)
-                            <tr>
+                            @forelse($users as $user)
+                            <tr id="user-row-{{ $user['id'] }}">
                                 <td>{{ $user['name'] }}</td>
                                 <td>{{ $user['email'] }}</td>
                                 <td>
@@ -176,12 +176,12 @@
                                         {{ str_replace('-', ' ', $user['role']) }}
                                     </span>
                                 </td>
-                                <td>{{ $user['created_date'] }}</td>
+                                <td>{{(new DateTime($user['created_at']))->format('Y-m-d')}}</td>
                                 <td>
                                     <button class="btn btn-action btn-edit" title="Edit User" onclick="editUser({{ $user['id'] }})">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-action btn-delete" title="Delete User" onclick="deleteUser({{ $user['id'] }}, '{{ $user['name'] }}')">
+                                    <button class="btn btn-action btn-delete" title="Delete User" onclick="deleteUser('{{ route('dashboard.users.delete', ['id' => $user->id]) }}', '{{ $user['name'] }}')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -197,7 +197,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="entries-info">
-                        <small class="text-muted">Showing 1 to {{ count($EntryUser) }} of {{ count($EntryUser) }} entries</small>
+                        <small class="text-muted">Showing 1 to {{ count($users) }} of {{ count($users) }} entries</small>
                     </div>
                     <nav aria-label="Table pagination">
                         <ul class="pagination pagination-sm mb-0">
@@ -228,33 +228,57 @@
         // window.location.href = `/dashboard/users/${userId}/edit`;
     }
 
-    function deleteUser(userId, userName) {
-        if (confirm(`Are you sure you want to delete user "${userName}"?`)) {
-            // For now, just show an alert - you can implement this later
-            alert(`Delete functionality will be implemented for user: ${userName}`);
-            // When ready, you can send DELETE request:
-            /*
-            fetch(`/dashboard/users/${userId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => {
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert('Failed to delete user. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the user.');
-            });
-            */
-        }
+    function deleteUser(url, userName) {
+        Swal.fire({
+            title: `Delete user "${userName}"?`,
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // When confirmed, send DELETE request
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove row dynamically
+                        const row = document.getElementById(`user-row-${url.split('/').pop()}`);
+                        if (row) row.remove();
+
+                        Swal.fire(
+                            'Deleted!',
+                            `User "${userName}" has been deleted.`,
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Failed!',
+                            'Failed to delete user. Please try again.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while deleting the user.',
+                        'error'
+                    );
+                });
+            }
+        });
     }
+
 
     // Handle search functionality
     document.addEventListener('DOMContentLoaded', function() {
