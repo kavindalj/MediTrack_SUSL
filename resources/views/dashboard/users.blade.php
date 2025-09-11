@@ -229,33 +229,56 @@
     }
 
     function deleteUser(url, userName) {
-        if (confirm(`Are you sure you want to delete user "${userName}"?`)) {
-            // For now, just show an alert - you can implement this later
-            alert(`Delete functionality will be implemented for user: ${userName}`);
-            // When ready, you can send DELETE request:
+        Swal.fire({
+            title: `Delete user "${userName}"?`,
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // When confirmed, send DELETE request
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove row dynamically
+                        const row = document.getElementById(`user-row-${url.split('/').pop()}`);
+                        if (row) row.remove();
 
-            fetch(url, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => {
-                if (response.ok) {
-                    const row = document.getElementById(`user-row-${url.split('/').pop()}`);
-                    if (row) row.remove();
-                    alert('User deleted successfully');
-                } else {
-                    alert('Failed to delete user. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the user.');
-            });
-        }
+                        Swal.fire(
+                            'Deleted!',
+                            `User "${userName}" has been deleted.`,
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Failed!',
+                            'Failed to delete user. Please try again.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while deleting the user.',
+                        'error'
+                    );
+                });
+            }
+        });
     }
+
 
     // Handle search functionality
     document.addEventListener('DOMContentLoaded', function() {
