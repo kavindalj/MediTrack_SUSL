@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
+    protected $productController;
+
+    public function __construct(ProductController $productController)
+    {
+        $this->productController = $productController;
+    }
     /**
      * Display the dashboard.
      *
@@ -422,21 +428,14 @@ class DashboardController extends Controller
 
     public function createSale()
     {
-        // Sample medicines data - in a real app, you'd fetch from the database
-        $medicines = [
-            (object) ['id' => 1, 'name' => 'Paracetamol 500mg', 'price' => 5.00, 'stock' => 500],
-            (object) ['id' => 2, 'name' => 'Amoxicillin 250mg', 'price' => 15.00, 'stock' => 300],
-            (object) ['id' => 3, 'name' => 'Omeprazole 20mg', 'price' => 12.50, 'stock' => 200],
-            (object) ['id' => 4, 'name' => 'Ibuprofen 400mg', 'price' => 7.50, 'stock' => 400],
-            (object) ['id' => 5, 'name' => 'Cetirizine 10mg', 'price' => 6.00, 'stock' => 350],
-            (object) ['id' => 6, 'name' => 'Vitamin C 1000mg', 'price' => 8.00, 'stock' => 600],
-            (object) ['id' => 7, 'name' => 'Aspirin 75mg', 'price' => 4.50, 'stock' => 450],
-            (object) ['id' => 8, 'name' => 'Metformin 500mg', 'price' => 10.00, 'stock' => 250],
-            (object) ['id' => 9, 'name' => 'Atorvastatin 10mg', 'price' => 18.00, 'stock' => 180],
-            (object) ['id' => 10, 'name' => 'Azithromycin 500mg', 'price' => 25.00, 'stock' => 150]
-        ];
+        // Create an instance of ProductController to get products
+        $productController = new ProductController();
+        $medicines = $productController->getProducts(); // Get products and assign to $medicines
         
-        return view('dashboard.forms.addSale', compact('medicines'));
+        // Pass the medicines data to the view
+        return view('dashboard.forms.addSale', [
+            'medicines' => $medicines  // This matches what the JavaScript expects
+        ]);
     }
 }
 
