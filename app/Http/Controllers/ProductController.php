@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -11,31 +12,65 @@ class ProductController extends Controller
      */
     public function getProducts()
     {
-        // Array of products/medicines - you can later replace this with database queries
-        $products = [
-            ['id' => 1, 'name' => 'Paracetamol 500mg', 'stock' => 500],
-            ['id' => 2, 'name' => 'Amoxicillin 250mg', 'stock' => 300],
-            ['id' => 3, 'name' => 'Omeprazole 20mg', 'stock' => 200],
-            ['id' => 4, 'name' => 'Ibuprofen 400mg', 'stock' => 400],
-            ['id' => 5, 'name' => 'Cetirizine 10mg', 'stock' => 350],
-            ['id' => 6, 'name' => 'Vitamin C 1000mg', 'stock' => 600],
-            ['id' => 7, 'name' => 'Aspirin 75mg', 'stock' => 450],
-            ['id' => 8, 'name' => 'Metformin 500mg', 'stock' => 250],
-            ['id' => 9, 'name' => 'Atorvastatin 10mg', 'stock' => 180],
-            ['id' => 10, 'name' => 'Azithromycin 500mg', 'stock' => 150],
-            ['id' => 11, 'name' => 'Loratadine 10mg', 'stock' => 320],
-            ['id' => 12, 'name' => 'Simvastatin 20mg', 'stock' => 275],
-            ['id' => 13, 'name' => 'Prednisolone 5mg', 'stock' => 190],
-            ['id' => 14, 'name' => 'Furosemide 40mg', 'stock' => 160],
-            ['id' => 15, 'name' => 'Salbutamol Inhaler', 'stock' => 85],
-            ['id' => 16, 'name' => 'Insulin Glargine', 'stock' => 45],
-            ['id' => 17, 'name' => 'Warfarin 5mg', 'stock' => 120],
-            ['id' => 18, 'name' => 'Digoxin 0.25mg', 'stock' => 95],
-            ['id' => 19, 'name' => 'Hydrochlorothiazide 25mg', 'stock' => 220],
-            ['id' => 20, 'name' => 'Clopidogrel 75mg', 'stock' => 140]
-        ];
+        try {
+            // Fetch products from database
+            $products = Product::select('id', 'name', 'quantity as stock', 'category', 'expire_date')
+                ->where('quantity', '>', 0) // Only get products with stock
+                ->orderBy('name')
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'stock' => $product->stock,
+                        'category' => $product->category,
+                        'expire_date' => $product->expire_date ? $product->expire_date->format('Y-m-d') : null,
+                    ];
+                })
+                ->toArray();
 
-        return $products;
+            return $products;
+
+        } catch (\Exception $e) {
+            // Log error and return empty array
+            \Log::error('Error fetching products: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Search products by name
+     */
+    public function searchProducts(Request $request)
+    {
+        $query = $request->get('q', '');
+        
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        try {
+            $products = Product::select('id', 'name', 'quantity as stock', 'category')
+                ->where('name', 'LIKE', '%' . $query . '%')
+                ->where('quantity', '>', 0)
+                ->orderBy('name')
+                ->limit(10)
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'stock' => $product->stock,
+                        'category' => $product->category,
+                    ];
+                });
+
+            return response()->json($products);
+
+        } catch (\Exception $e) {
+            \Log::error('Error searching products: ' . $e->getMessage());
+            return response()->json([]);
+        }
     }
 
     /**
@@ -44,6 +79,26 @@ class ProductController extends Controller
     public function showPrescriptionForm()
     {
         $products = $this->getProducts();
-        return view('dashboard.forms.addSale', compact('products'));
+        return view('dashboard.forms.addPrescription', compact('products'));
+    }
+
+    /**
+     * Get products by category
+     */
+    public function getProductsByCategory($category)
+    {
+        try {
+            $products = Product::select('id', 'name', 'quantity as stock', 'category')
+                ->where('category', $category)
+                ->where('quantity', '>', 0)
+                ->orderBy('name')
+                ->get();
+
+            return response()->json($products);
+
+        } catch (\Exception $e) {
+            \Log::error('Error fetching products by category: ' . $e->getMessage());
+            return response()->json([]);
+        }
     }
 }

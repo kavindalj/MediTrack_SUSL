@@ -180,8 +180,8 @@
                     </nav>
                 </div>
                 <div>
-                    <a href="#" class="btn btn-primary" id="addSaleBtn">
-                        <i class="fas fa-plus me-2"></i> New Sale
+                    <a href="#" class="btn btn-primary" id="addPrescriptionBtn">
+                        <i class="fas fa-plus me-2"></i> New Prescription
                     </a>
                 </div>
             </div>
@@ -197,7 +197,7 @@
                     <div>
                         <i class="fas fa-search me-2"></i> Showing search results for: <strong>"{{ request('search') }}"</strong>
                     </div>
-                    <a href="{{ route('dashboard.sale') }}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{{ route('dashboard.prescription') }}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-times me-1"></i> Clear Search
                     </a>
                 </div>
@@ -519,14 +519,14 @@
                 return $('meta[name="csrf-token"]').attr('content');
             }
             
-            // Add Sale Button Click
-            $('#addSaleBtn').on('click', function() {
-                // Redirect to sale form page
-                window.location.href = "{{ route('dashboard.sale.create') }}";
+            // Add addPrescriptionBtn Button Click
+            $('#addPrescriptionBtn').on('click', function() {
+                // Redirect to prescription form page
+                window.location.href = "{{ route('dashboard.prescription.create') }}";
                 return false;
             });
             
-            // View Sale Button Click
+            // View Prescription Button Click
             $(document).on('click', '.btn-view', function(e) {
                 e.preventDefault();
                 const saleId = $(this).data('id');

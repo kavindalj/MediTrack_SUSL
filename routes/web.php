@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
-    Route::get('/dashboard/sale', [DashboardController::class, 'sale'])->name('dashboard.sale');
+    Route::get('/dashboard/prescription', [DashboardController::class, 'prescription'])->name('dashboard.prescription');
     Route::get('/dashboard/users', [DashboardController::class, 'users'])->name('dashboard.users');
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
 
@@ -35,8 +35,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/profile/update-password', [DashboardController::class, 'updatePassword'])->name('dashboard.profile.update-password');
     Route::post('/dashboard/profile/update-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update-profile');
 
-    Route::get('/dashboard/sale/create', [DashboardController::class, 'createSale'])->name('dashboard.sale.create');
-    
+    Route::get('/dashboard/prescription/create', [DashboardController::class, 'prescriptionCreate'])->name('dashboard.prescription.create');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

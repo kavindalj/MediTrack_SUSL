@@ -136,7 +136,7 @@ class DashboardController extends Controller
 
     return view('dashboard.products', compact('products'));
     }
-    public function sale()
+    public function Prescription()
     {
         // Create a collection of sample sales data
         $salesCollection = collect([
@@ -328,8 +328,8 @@ class DashboardController extends Controller
             $page,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-        
-        return view('dashboard.sale', compact('sales'));
+
+        return view('dashboard.prescription', compact('sales'));
     }
 
 
@@ -530,14 +530,14 @@ class DashboardController extends Controller
         }
     }
 
-    public function createSale()
+    public function prescriptionCreate()
     {
         // Create an instance of ProductController to get products
         $productController = new ProductController();
         $medicines = $productController->getProducts(); // Get products and assign to $medicines
         
         // Pass the medicines data to the view
-        return view('dashboard.forms.addSale', [
+        return view('dashboard.forms.addPrescription', [
             'medicines' => $medicines  // This matches what the JavaScript expects
         ]);
     }

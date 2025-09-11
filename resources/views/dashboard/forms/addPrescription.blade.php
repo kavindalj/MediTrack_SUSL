@@ -114,14 +114,14 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('dashboard.sale') }}">Prescriptions</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard.prescription') }}">Prescriptions</a></li>
                             <li class="breadcrumb-item active" aria-current="page">New Prescription</li>
                         </ol>
                     </nav>
                 </div>
             </div>
-            
-            <form id="saleForm" action="{{ route('dashboard.sale') }}" method="POST">
+
+            <form id="saleForm" action="{{ route('dashboard.prescription') }}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-lg-8">
@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveButton.disabled = false;
                     
                     // Redirect to prescriptions list with success message
-                    window.location.href = '{{ route("dashboard.sale") }}?success=1';
+                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
                 }).catch((error) => {
                     console.error('PDF generation failed:', error);
                     // Show error message but still complete the prescription
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveButton.disabled = false;
                     
                     // Redirect to prescriptions list with success message
-                    window.location.href = '{{ route("dashboard.sale") }}?success=1';
+                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
                 });
             } else {
                 // Show success message
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 saveButton.disabled = false;
                 
                 // Redirect to prescriptions list with success message
-                window.location.href = '{{ route("dashboard.sale") }}?success=1';
+                window.location.href = '{{ route("dashboard.prescription") }}?success=1';
             }
         }, 1000);
     });

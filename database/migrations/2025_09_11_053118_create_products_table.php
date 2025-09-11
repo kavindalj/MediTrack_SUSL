@@ -17,10 +17,9 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('category');
-            $table->index('category');
             $table->integer('quantity')->default(0);
-            $table->date('expire_date')->nullable();
-            $table->date('entry_date');
+            $table->date('expire_date');
+            $table->date('entry_date')->nullable();
             $table->timestamps();
         });
     }
