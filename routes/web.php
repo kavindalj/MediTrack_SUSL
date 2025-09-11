@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/profile/update-password', [DashboardController::class, 'updatePassword'])->name('dashboard.profile.update-password');
     Route::post('/dashboard/profile/update-profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update-profile');
 
-    Route::get('/dashboard/prescription/create', [DashboardController::class, 'prescriptionCreate'])->name('dashboard.prescription.create');
+    Route::get('/dashboard/prescription/create', [PrescriptionController::class, 'create'])->name('dashboard.prescription.create');
+    Route::post('/dashboard/prescription/store', [PrescriptionController::class, 'store'])->name('dashboard.prescription.store');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

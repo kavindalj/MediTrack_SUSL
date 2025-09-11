@@ -121,7 +121,7 @@
                 </div>
             </div>
 
-            <form id="saleForm" action="{{ route('dashboard.prescription') }}" method="POST">
+            <form id="saleForm" action="{{ route('dashboard.prescription.store') }}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-lg-8">
@@ -129,9 +129,9 @@
                             <h5 class="mb-3">Student Information</h5>
                             <div class="customer-info">
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="customerName" class="form-label">Student ID<span class="required-asterisk">*</span></label>
-                                        <input type="text" class="form-control" id="customerName" name="customer_name" required>
+                                    <div class="col-md-12">
+                                        <label for="studentId" class="form-label">Student ID<span class="required-asterisk">*</span></label>
+                                        <input type="text" class="form-control" id="studentId" name="student_id" required>
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@
 
 @section('scripts')
 <!-- HTML to PDF library -->
-<script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Get medicines data from the controller
@@ -449,15 +449,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Generate and download PDF
-    function generatePDF() {
+    function generatePDF(prescriptionData = null) {
         return new Promise((resolve, reject) => {
             try {
-                const customerName = document.getElementById('customerName').value;
+                console.log('Starting PDF generation...');
+                console.log('Cart items:', cartItems);
+                console.log('Prescription data:', prescriptionData);
+                
+                const customerName = document.getElementById('studentId').value;
                 const notes = document.getElementById('saleNotes').value;
                 const totalItems = cartItems.length;
                 const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
                 const currentDate = new Date().toLocaleDateString();
                 const currentTime = new Date().toLocaleTimeString();
+                
+                // Use prescription number from database if available, otherwise generate a temporary one
+                const prescriptionId = prescriptionData ? prescriptionData.prescription_number : `TEMP-${Date.now()}`;
+                const filename = prescriptionData ? `prescription-${prescriptionData.prescription_number}.pdf` : `prescription-${Date.now()}.pdf`;
+                
+                console.log('PDF Data:', { customerName, notes, totalItems, totalQuantity, prescriptionId });
+                
+                // Validate required data
+                if (!customerName) {
+                    throw new Error('Student ID is required for PDF generation');
+                }
+                
+                if (cartItems.length === 0) {
+                    throw new Error('No items in cart for PDF generation');
+                }
                 
                 // Create PDF content
                 const pdfContent = `
@@ -548,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="info-row"><strong>Student ID:</strong> ${customerName}</div>
         <div class="info-row"><strong>Date:</strong> ${currentDate}</div>
         <div class="info-row"><strong>Time:</strong> ${currentTime}</div>
-        <div class="info-row"><strong>Prescription ID:</strong> PRESC-${Date.now()}</div>
+        <div class="info-row"><strong>Prescription ID:</strong> ${prescriptionId}</div>
     </div>
     
     <h3>Items</h3>
@@ -586,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Create and download PDF
                 const opt = {
                     margin: 0.5,
-                    filename: `prescription-${Date.now()}.pdf`,
+                    filename: filename,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
                         scale: 2,
@@ -598,8 +617,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Use html2pdf library to generate PDF
                 if (typeof html2pdf !== 'undefined') {
+                    console.log('html2pdf library found, generating PDF...');
                     const element = document.createElement('div');
                     element.innerHTML = pdfContent;
+                    element.style.backgroundColor = '#ffffff';
                     
                     html2pdf().set(opt).from(element).save().then(() => {
                         console.log('PDF generated successfully');
@@ -612,13 +633,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.warn('html2pdf library not loaded, using fallback');
                     // Fallback: open in new window for manual printing
                     const printWindow = window.open('', '_blank');
-                    printWindow.document.write(pdfContent);
-                    printWindow.document.close();
-                    printWindow.focus();
-                    setTimeout(() => {
-                        printWindow.print();
-                        resolve();
-                    }, 1000);
+                    if (printWindow) {
+                        printWindow.document.write(pdfContent);
+                        printWindow.document.close();
+                        printWindow.focus();
+                        setTimeout(() => {
+                            printWindow.print();
+                            resolve();
+                        }, 1000);
+                    } else {
+                        reject(new Error('Failed to open print window - popup blocker may be enabled'));
+                    }
                 }
             } catch (error) {
                 console.error('Error in generatePDF:', error);
@@ -636,8 +661,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // In a real app, you would submit the form to the server
-        // For now, we'll just simulate success and generate PDF
+        // Collect form data
+        const formData = {
+            student_id: document.getElementById('studentId').value,
+            notes: document.getElementById('saleNotes').value,
+            medicines: cartItems.map(item => ({
+                id: item.id,
+                name: item.name,
+                quantity: item.quantity,
+                dosage: item.dosage || null
+            }))
+        };
         
         const saveButton = document.getElementById('saveSaleBtn');
         const originalText = saveButton.innerHTML;
@@ -645,46 +679,75 @@ document.addEventListener('DOMContentLoaded', function() {
         saveButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
         saveButton.disabled = true;
         
-        // Simulate server processing
-        setTimeout(() => {
-            // Check if PDF should be generated
-            const shouldPrintPrescription = document.getElementById('printInvoice').checked;
-            
-            if (shouldPrintPrescription) {
-                console.log('Starting PDF generation...');
-                generatePDF().then(() => {
-                    console.log('PDF generation completed');
-                    
-                    // Reset form or redirect
-                    saveButton.innerHTML = originalText;
-                    saveButton.disabled = false;
-                    
-                    // Redirect to prescriptions list with success message
-                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
-                }).catch((error) => {
-                    console.error('PDF generation failed:', error);
-                    // Show error message but still complete the prescription
-                    alert('Prescription completed successfully! However, there was an issue generating the PDF.');
-                    
-                    // Reset form or redirect
-                    saveButton.innerHTML = originalText;
-                    saveButton.disabled = false;
-                    
-                    // Redirect to prescriptions list with success message
-                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
-                });
-            } else {
-                // Show success message
-                alert('Prescription completed successfully!');
+        // Submit to server
+        fetch('{{ route("dashboard.prescription.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Check if PDF should be generated
+                const shouldPrintPrescription = document.getElementById('printInvoice').checked;
                 
-                // Reset form or redirect
+                if (shouldPrintPrescription) {
+                    console.log('Starting PDF generation...');
+                    generatePDF(data.prescription).then(() => {
+                        console.log('PDF generation completed');
+                        
+                        // Show success message with prescription number
+                        alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}`);
+                        
+                        // Reset form or redirect
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        // Redirect to prescriptions list with success message
+                        window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                    }).catch((error) => {
+                        console.error('PDF generation failed:', error);
+                        // Show success message even if PDF fails
+                        alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}. However, there was an issue generating the PDF.`);
+                        
+                        // Reset form or redirect
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        // Redirect to prescriptions list with success message
+                        window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                    });
+                } else {
+                    // Show success message with prescription number
+                    alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}`);
+                    
+                    // Reset form or redirect
+                    saveButton.innerHTML = originalText;
+                    saveButton.disabled = false;
+                    
+                    // Redirect to prescriptions list with success message
+                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                }
+            } else {
+                // Show error message
+                alert('Error: ' + data.message);
+                
+                // Reset button
                 saveButton.innerHTML = originalText;
                 saveButton.disabled = false;
-                
-                // Redirect to prescriptions list with success message
-                window.location.href = '{{ route("dashboard.prescription") }}?success=1';
             }
-        }, 1000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the prescription. Please try again.');
+            
+            // Reset button
+            saveButton.innerHTML = originalText;
+            saveButton.disabled = false;
+        });
     });
 });
 </script>
