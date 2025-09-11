@@ -366,8 +366,20 @@ class DashboardController extends Controller
             ]
         ];
 
-        return view('dashboard.users', compact('EntryUser'));
+        $users = User::all();
+
+        return view('dashboard.users', compact('users'));
     }
+
+    public function deleteUsers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
+    }
+
+
     public function profile()
     {
         // Get actual authenticated user data
