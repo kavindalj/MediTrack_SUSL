@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -208,6 +210,54 @@ class DashboardController extends Controller
             return response()->json($prescriptionData);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Prescription not found'], 404);
+        }
+    }
+
+    public function deletePrescription($id)
+    {
+        try {
+            return DB::transaction(function () use ($id) {
+                $prescription = \App\Models\Prescription::with('prescriptionItems.product')->findOrFail($id);
+                
+                // Store prescription number for response message
+                $prescriptionNumber = $prescription->prescription_number;
+                
+                // Manually restore product quantities before deleting
+                foreach ($prescription->prescriptionItems as $item) {
+                    if ($item->product) {
+                        // Get current product quantity
+                        $currentQuantity = $item->product->quantity;
+                        
+                        // Restore the quantity to the product
+                        $item->product->increment('quantity', $item->quantity);
+                        
+                        // Get updated quantity for logging
+                        $item->product->refresh();
+                        $newQuantity = $item->product->quantity;
+                        
+                        // Log for debugging
+                        Log::info("Restored {$item->quantity} units to product {$item->product->name} (ID: {$item->product->id}). Quantity: {$currentQuantity} -> {$newQuantity}");
+                    }
+                }
+                
+                // Delete prescription items first
+                $prescription->prescriptionItems()->delete();
+                
+                // Then delete the prescription
+                $prescription->delete();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => "Prescription {$prescriptionNumber} deleted successfully and product quantities restored"
+                ]);
+            });
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to delete prescription {$id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete prescription: ' . $e->getMessage()
+            ], 500);
         }
     }
 

@@ -599,27 +599,50 @@
                 $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...');
                 $(this).prop('disabled', true);
                 
-                // Simulate server delay
-                setTimeout(() => {
-                    if (deleteModal) {
-                        deleteModal.hide();
+                // Make AJAX call to delete prescription
+                $.ajax({
+                    url: `/dashboard/prescription/${prescriptionId}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': getCSRFToken()
+                    },
+                    success: function(response) {
+                        if (deleteModal) {
+                            deleteModal.hide();
+                        }
+                        
+                        // Remove the row from the table
+                        $('button.btn-delete[data-id="' + prescriptionId + '"]').closest('tr').fadeOut(300, function() {
+                            $(this).remove();
+                            updateTableInfo();
+                        });
+                        
+                        // Reset the button
+                        $('#confirmDelete').html('Delete');
+                        $('#confirmDelete').prop('disabled', false);
+                        
+                        // Show success message
+                        showToast(response.message || 'Prescription deleted successfully', 'success');
+                    },
+                    error: function(xhr, status, error) {
+                        // Reset the button
+                        $('#confirmDelete').html('Delete');
+                        $('#confirmDelete').prop('disabled', false);
+                        
+                        // Hide modal
+                        if (deleteModal) {
+                            deleteModal.hide();
+                        }
+                        
+                        // Show error message
+                        let errorMessage = 'Failed to delete prescription';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        showToast(errorMessage, 'danger');
+                        console.error('Error deleting prescription:', error);
                     }
-                    
-                    // Remove the row from the table
-                    $('button.btn-delete[data-id="' + prescriptionId + '"]').closest('tr').fadeOut(300, function() {
-                        $(this).remove();
-                        updateTableInfo();
-                    });
-                    
-                    // Reset the button
-                    $(this).html('Delete');
-                    $(this).prop('disabled', false);
-                    
-                    // Show success message
-                    showToast('Prescription deleted successfully', 'success');
-                    
-                    
-                }, 800);
+                });
             });
             
             // Print Prescription Button Click
