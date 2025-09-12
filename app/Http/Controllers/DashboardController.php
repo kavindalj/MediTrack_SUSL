@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -141,198 +143,122 @@ class DashboardController extends Controller
     }
     public function Prescription()
     {
-        // Create a collection of sample sales data
-        $salesCollection = collect([
-            (object) [
-            'id' => 1,
-            'invoice_no' => 'INV-10001',
-            'customer_name' => 'John Doe',
-            'total_amount' => 472.50,
-            'status' => 'Completed',
-            'created_at' => now()->subDays(5),
-            ],
-            (object) [
-            'id' => 2,
-            'invoice_no' => 'INV-10002',
-            'customer_name' => 'Jane Smith',
-            'total_amount' => 298.75,
-            'status' => 'Completed',
-            'created_at' => now()->subDays(4),
-            ],
-            (object) [
-            'id' => 3,
-            'invoice_no' => 'INV-10003',
-            'customer_name' => 'Robert Johnson',
-            'total_amount' => 1250.00,
-            'status' => 'Pending',
-            'created_at' => now()->subDays(3),
-            ],
-            (object) [
-            'id' => 4,
-            'invoice_no' => 'INV-10004',
-            'customer_name' => 'Mary Williams',
-            'total_amount' => 785.25,
-            'status' => 'Completed',
-            'created_at' => now()->subDays(2),
-            ],
-            (object) [
-            'id' => 5,
-            'invoice_no' => 'INV-10005',
-            'customer_name' => 'David Brown',
-            'total_amount' => 345.00,
-            'status' => 'Completed',
-            'created_at' => now()->subDays(1),
-            ],
-            (object) [
-            'id' => 6,
-            'invoice_no' => 'INV-10006',
-            'customer_name' => 'Sarah Miller',
-            'total_amount' => 620.75,
-            'status' => 'Pending',
-            'created_at' => now()->subHours(12),
-            ],
-            (object) [
-            'id' => 7,
-            'invoice_no' => 'INV-10007',
-            'customer_name' => 'Michael Davis',
-            'total_amount' => 189.50,
-            'status' => 'Completed',
-            'created_at' => now()->subHours(6),
-            ],
-            (object) [
-            'id' => 8,
-            'invoice_no' => 'INV-10008',
-            'customer_name' => 'Jennifer Garcia',
-            'total_amount' => 425.00,
-            'status' => 'Completed',
-            'created_at' => now()->subHours(3),
-            ],
-            (object) [
-            'id' => 9,
-            'invoice_no' => 'INV-10009',
-            'customer_name' => 'William Rodriguez',
-            'total_amount' => 875.25,
-            'status' => 'Pending',
-            'created_at' => now(),
-            ],
-            (object) [
-            'id' => 10,
-            'invoice_no' => 'INV-10010',
-            'customer_name' => 'Linda Martinez',
-            'total_amount' => 550.00,
-            'status' => 'Completed',
-            'created_at' => now()->subMinutes(30),
-            ],
-            // Additional sales
-            (object) [
-            'id' => 11,
-            'invoice_no' => 'INV-10011',
-            'customer_name' => 'Kevin Lee',
-            'total_amount' => 320.00,
-            'status' => 'Completed',
-            'created_at' => now()->subMinutes(25),
-            ],
-            (object) [
-            'id' => 12,
-            'invoice_no' => 'INV-10012',
-            'customer_name' => 'Emily Clark',
-            'total_amount' => 210.50,
-            'status' => 'Pending',
-            'created_at' => now()->subMinutes(20),
-            ],
-            (object) [
-            'id' => 13,
-            'invoice_no' => 'INV-10013',
-            'customer_name' => 'Brian Adams',
-            'total_amount' => 980.00,
-            'status' => 'Completed',
-            'created_at' => now()->subMinutes(15),
-            ],
-            (object) [
-            'id' => 14,
-            'invoice_no' => 'INV-10014',
-            'customer_name' => 'Jessica Turner',
-            'total_amount' => 430.75,
-            'status' => 'Completed',
-            'created_at' => now()->subMinutes(10),
-            ],
-            (object) [
-            'id' => 15,
-            'invoice_no' => 'INV-10015',
-            'customer_name' => 'Chris Evans',
-            'total_amount' => 760.00,
-            'status' => 'Pending',
-            'created_at' => now()->subMinutes(5),
-            ],
-            (object) [
-            'id' => 16,
-            'invoice_no' => 'INV-10016',
-            'customer_name' => 'Patricia Moore',
-            'total_amount' => 540.25,
-            'status' => 'Completed',
-            'created_at' => now()->subMinute(),
-            ],
-            (object) [
-            'id' => 17,
-            'invoice_no' => 'INV-10017',
-            'customer_name' => 'George King',
-            'total_amount' => 1200.00,
-            'status' => 'Completed',
-            'created_at' => now(),
-            ],
-            (object) [
-            'id' => 18,
-            'invoice_no' => 'INV-10018',
-            'customer_name' => 'Nancy Scott',
-            'total_amount' => 670.50,
-            'status' => 'Pending',
-            'created_at' => now(),
-            ],
-            (object) [
-            'id' => 19,
-            'invoice_no' => 'INV-10019',
-            'customer_name' => 'Steven Young',
-            'total_amount' => 390.00,
-            'status' => 'Completed',
-            'created_at' => now(),
-            ],
-            (object) [
-            'id' => 20,
-            'invoice_no' => 'INV-10020',
-            'customer_name' => 'Laura Hill',
-            'total_amount' => 850.75,
-            'status' => 'Completed',
-            'created_at' => now(),
-            ],
-        ]);
+        // Get search query if provided
+        $search = request('search');
         
+        // Fetch real prescription data from database
+        $prescriptionsQuery = \App\Models\Prescription::with('prescriptionItems.product')
+            ->orderBy('created_at', 'desc');
         
-        // Convert the collection to a paginator with configurable items per page
-        $page = request()->get('page', 1); 
-        $perPage = request()->get('per_page', 10); 
-        $offset = ($page - 1) * $perPage;
-        
-        // Filter by search term if provided
-        $searchTerm = request()->get('search');
-        if ($searchTerm) {
-            $salesCollection = $salesCollection->filter(function($sale) use ($searchTerm) {
-                return stripos($sale->customer_name, $searchTerm) !== false || 
-                       stripos($sale->invoice_no, $searchTerm) !== false;
+        // Apply search filter if provided
+        if ($search) {
+            $prescriptionsQuery->where(function($query) use ($search) {
+                $query->where('student_id', 'LIKE', "%{$search}%")
+                      ->orWhere('prescription_number', 'LIKE', "%{$search}%")
+                      ->orWhere('medicine_names', 'LIKE', "%{$search}%");
             });
         }
         
-        $currentPageItems = $salesCollection->slice($offset, $perPage);
+        // Paginate results
+        $perPage = request('per_page', 10);
+        $page = request('page', 1);
+        $prescriptions = $prescriptionsQuery->paginate($perPage, ['*'], 'page', $page);
         
-        // Create a Laravel paginator instance
-        $sales = new \Illuminate\Pagination\LengthAwarePaginator(
-            $currentPageItems,
-            $salesCollection->count(),
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
+        // Transform prescription data to match the view expectations
+        $prescriptions->getCollection()->transform(function ($prescription) {
+            // Get medicine names from the prescription_items relationship
+            $medicineNames = $prescription->prescriptionItems->map(function($item) {
+                return $item->product->name ?? 'Unknown Medicine';
+            })->unique()->values()->toArray();
+            
+            // Create a formatted medicine names string
+            $medicineNamesString = implode(', ', array_slice($medicineNames, 0, 3));
+            if (count($medicineNames) > 3) {
+                $medicineNamesString .= ' and ' . (count($medicineNames) - 3) . ' more';
+            }
+            
+            $prescription->medicine_names_display = $medicineNamesString;
+            return $prescription;
+        });
 
-        return view('dashboard.prescription', compact('sales'));
+        return view('dashboard.prescription', compact('prescriptions'));
+    }
+
+    public function getPrescriptionDetails($id)
+    {
+        try {
+            $prescription = \App\Models\Prescription::with('prescriptionItems.product')->findOrFail($id);
+            
+            // Format the response
+            $prescriptionData = [
+                'id' => $prescription->id,
+                'prescription_number' => $prescription->prescription_number,
+                'student_id' => $prescription->student_id,
+                'date' => $prescription->created_at->format('d-M-Y H:i'),
+                'notes' => $prescription->notes,
+                'total_items' => $prescription->total_items,
+                'total_quantity' => $prescription->total_quantity,
+                'items' => $prescription->prescriptionItems->map(function($item) {
+                    return [
+                        'medicine' => $item->product->name ?? 'Unknown Medicine',
+                        'quantity' => $item->quantity,
+                        'notes' => $item->notes ?? ''
+                    ];
+                })
+            ];
+            
+            return response()->json($prescriptionData);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Prescription not found'], 404);
+        }
+    }
+
+    public function deletePrescription($id)
+    {
+        try {
+            return DB::transaction(function () use ($id) {
+                $prescription = \App\Models\Prescription::with('prescriptionItems.product')->findOrFail($id);
+                
+                // Store prescription number for response message
+                $prescriptionNumber = $prescription->prescription_number;
+                
+                // Manually restore product quantities before deleting
+                foreach ($prescription->prescriptionItems as $item) {
+                    if ($item->product) {
+                        // Get current product quantity
+                        $currentQuantity = $item->product->quantity;
+                        
+                        // Restore the quantity to the product
+                        $item->product->increment('quantity', $item->quantity);
+                        
+                        // Get updated quantity for logging
+                        $item->product->refresh();
+                        $newQuantity = $item->product->quantity;
+                        
+                        // Log for debugging
+                        Log::info("Restored {$item->quantity} units to product {$item->product->name} (ID: {$item->product->id}). Quantity: {$currentQuantity} -> {$newQuantity}");
+                    }
+                }
+                
+                // Delete prescription items first
+                $prescription->prescriptionItems()->delete();
+                
+                // Then delete the prescription
+                $prescription->delete();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => "Prescription {$prescriptionNumber} deleted successfully and product quantities restored"
+                ]);
+            });
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to delete prescription {$id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete prescription: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 
