@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Prescription;
+use App\Models\PrescriptionItem;
 use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
@@ -136,7 +139,7 @@ class DashboardController extends Controller
 
     return view('dashboard.products', compact('products'));
     }
-    public function sale()
+    public function Prescription()
     {
         // Create a collection of sample sales data
         $salesCollection = collect([
@@ -328,8 +331,8 @@ class DashboardController extends Controller
             $page,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-        
-        return view('dashboard.sale', compact('sales'));
+
+        return view('dashboard.prescription', compact('sales'));
     }
 
 
@@ -540,18 +543,6 @@ class DashboardController extends Controller
                 'message' => 'An error occurred while updating profile: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    public function createSale()
-    {
-        // Create an instance of ProductController to get products
-        $productController = new ProductController();
-        $medicines = $productController->getProducts(); // Get products and assign to $medicines
-        
-        // Pass the medicines data to the view
-        return view('dashboard.forms.addSale', [
-            'medicines' => $medicines  // This matches what the JavaScript expects
-        ]);
     }
 }
 
