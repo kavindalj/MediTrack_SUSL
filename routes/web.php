@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
     Route::get('/dashboard/prescription', [DashboardController::class, 'prescription'])->name('dashboard.prescription');
+    Route::get('/dashboard/prescription/{id}/details', [DashboardController::class, 'getPrescriptionDetails'])->name('dashboard.prescription.details');
     Route::get('/dashboard/users', [DashboardController::class, 'users'])->name('dashboard.users');
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
 

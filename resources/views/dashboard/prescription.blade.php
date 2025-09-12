@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'MediTrack Dashboard')
-@section('page-title', 'Sales')
+@section('page-title', 'Prescriptions')
 
 @section('styles')
 <!-- add custom styles here if needed -->
@@ -175,7 +175,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Sales</li>
+                            <li class="breadcrumb-item active" aria-current="page">Prescriptions</li>
                         </ol>
                     </nav>
                 </div>
@@ -188,9 +188,9 @@
             
             <div class="table-container">
                 <!-- Hidden inputs to store pagination info for JavaScript -->
-                <input type="hidden" id="current-page" value="{{ $sales->currentPage() ?? 1 }}">
-                <input type="hidden" id="per-page" value="{{ $sales->perPage() ?? 10 }}">
-                <input type="hidden" id="total-items" value="{{ $sales->total() ?? 0 }}">
+                <input type="hidden" id="current-page" value="{{ $prescriptions->currentPage() ?? 1 }}">
+                <input type="hidden" id="per-page" value="{{ $prescriptions->perPage() ?? 10 }}">
+                <input type="hidden" id="total-items" value="{{ $prescriptions->total() ?? 0 }}">
                 
                 @if(request('search'))
                 <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
@@ -208,17 +208,17 @@
                     <div class="entries-selector">
                         <label class="me-2">Show</label>
                         <select class="form-select form-select-sm d-inline-block w-auto me-2" id="per-page-selector">
-                            <option value="10" {{ ($sales->perPage() ?? 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="25" {{ ($sales->perPage() ?? 10) == 25 ? 'selected' : '' }}>25</option>
-                            <option value="50" {{ ($sales->perPage() ?? 10) == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ ($sales->perPage() ?? 10) == 100 ? 'selected' : '' }}>100</option>
+                            <option value="10" {{ ($prescriptions->perPage() ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ ($prescriptions->perPage() ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ ($prescriptions->perPage() ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ ($prescriptions->perPage() ?? 10) == 100 ? 'selected' : '' }}>100</option>
                         </select>
                         <label>entries per page</label>
                     </div>
                     
                     <div class="search-box">
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" placeholder="Search sales..." id="search-input" value="{{ request('search') }}">
+                            <input type="text" class="form-control form-control-sm" placeholder="Search prescriptions..." id="search-input" value="{{ request('search') }}">
                             <button class="btn btn-sm btn-outline-secondary" type="button" id="search-button">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -234,30 +234,28 @@
                         <thead>
                             <tr>
                                 <th scope="col" width="5%">#</th>
-                                <th scope="col" width="15%">Invoice No</th>
-                                <th scope="col" width="20%">Customer</th>
-                                <th scope="col" width="15%">Amount</th>
-                                
+                                <th scope="col" width="15%">Student ID</th>
+                                <th scope="col" width="15%">Prescription No</th>
+                                <th scope="col" width="25%">Medicines</th>
                                 <th scope="col" width="15%">Date</th>
                                 <th scope="col" width="15%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if(isset($sales) && count($sales))
-                                @foreach($sales as $index => $sale)
+                            @if(isset($prescriptions) && count($prescriptions))
+                                @foreach($prescriptions as $index => $prescription)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $sale->invoice_no }}</td>
-                                    <td>{{ $sale->customer_name }}</td>
-                                    <td><span class="sale-amount">Rs. {{ number_format($sale->total_amount, 2) }}</span></td>
-                                    
-                                    <td>{{ $sale->created_at->format('d-M-Y-H:i') }}</td>
+                                    <td>{{ ($prescriptions->currentPage() - 1) * $prescriptions->perPage() + $index + 1 }}</td>
+                                    <td>{{ $prescription->student_id }}</td>
+                                    <td>{{ $prescription->prescription_number }}</td>
+                                    <td>{{ $prescription->medicine_names_display }}</td>
+                                    <td>{{ $prescription->created_at->format('d-M-Y H:i') }}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-action btn-view" data-id="{{ $sale->id }}">
+                                            <button class="btn btn-action btn-view" data-id="{{ $prescription->id }}" onclick="showPrescriptionReceipt({{ $prescription->id }})">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button class="btn btn-action btn-delete" data-id="{{ $sale->id }}">
+                                            <button class="btn btn-action btn-delete" data-id="{{ $prescription->id }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -266,7 +264,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted">No sales found</td>
+                                    <td colspan="6" class="text-center text-muted">No prescriptions found</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -277,20 +275,20 @@
                 <div class="d-flex justify-content-between align-items-center mt-4">
                     <div>
                         <p class="text-muted mb-0 fw-light">
-                            @if(isset($sales) && $sales->total() > 0)
-                                Showing {{ ($sales->currentPage() - 1) * $sales->perPage() + 1 }}
-                                to {{ min($sales->currentPage() * $sales->perPage(), $sales->total()) }}
-                                of {{ $sales->total() }} entries
+                            @if(isset($prescriptions) && $prescriptions->total() > 0)
+                                Showing {{ ($prescriptions->currentPage() - 1) * $prescriptions->perPage() + 1 }}
+                                to {{ min($prescriptions->currentPage() * $prescriptions->perPage(), $prescriptions->total()) }}
+                                of {{ $prescriptions->total() }} entries
                             @else
                                 Showing 0 to 0 of 0 entries
                             @endif
                         </p>
                     </div>
                     <nav aria-label="Page navigation" class="pagination-container">
-                        @if(isset($sales))
+                        @if(isset($prescriptions))
                             @php
                                 // For custom pagination
-                                $paginator = $sales;
+                                $paginator = $prescriptions;
                                 $currentPage = $paginator->currentPage();
                                 $lastPage = $paginator->lastPage();
                                 $onEachSide = 1;
@@ -393,16 +391,13 @@
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <h6 class="mb-2">Invoice Information</h6>
-                        <p class="mb-1"><strong>Invoice No:</strong> <span id="invoice-no"></span></p>
+                        <h6 class="mb-2">Prescription Information</h6>
+                        <p class="mb-1"><strong>Prescription No:</strong> <span id="invoice-no"></span></p>
                         <p class="mb-1"><strong>Date:</strong> <span id="sale-date"></span></p>
-                        <p class="mb-1"><strong>Status:</strong> <span id="sale-status"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="mb-2">Customer Information</h6>
-                        <p class="mb-1"><strong>Name:</strong> <span id="customer-name"></span></p>
-                        <p class="mb-1"><strong>Phone:</strong> <span id="customer-phone"></span></p>
-                        <p class="mb-1"><strong>Email:</strong> <span id="customer-email"></span></p>
+                        <h6 class="mb-2">Student Information</h6>
+                        <p class="mb-1"><strong>Student ID:</strong> <span id="customer-name"></span></p>
                     </div>
                 </div>
                 
@@ -414,8 +409,6 @@
                                 <th>#</th>
                                 <th>Medicine</th>
                                 <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody id="sale-items">
@@ -423,16 +416,8 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="4" class="text-end fw-bold">Subtotal:</td>
-                                <td id="subtotal">Rs. 0.00</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" class="text-end fw-bold">Tax (5%):</td>
-                                <td id="tax">Rs. 0.00</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" class="text-end fw-bold">Total:</td>
-                                <td id="total" class="fw-bold">Rs. 0.00</td>
+                                <td colspan="2" class="text-end fw-bold">Total Items:</td>
+                                <td id="total" class="fw-bold">0</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -446,7 +431,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="printInvoice">
-                    <i class="fas fa-print me-1"></i> Print Invoice
+                    <i class="fas fa-print me-1"></i> Print Prescription
                 </button>
             </div>
         </div>
@@ -477,6 +462,12 @@
 @section('scripts')
 <!-- add custom scripts here if needed -->
 <script>
+    // Global function to show prescription receipt (called from onclick)
+    function showPrescriptionReceipt(prescriptionId) {
+        // Trigger the view button click programmatically
+        $('.btn-view[data-id="' + prescriptionId + '"]').trigger('click');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Check if there's a search parameter in the URL and show the clear button if needed
         const urlParams = new URLSearchParams(window.location.search);
@@ -529,93 +520,71 @@
             // View Prescription Button Click
             $(document).on('click', '.btn-view', function(e) {
                 e.preventDefault();
-                const saleId = $(this).data('id');
-                
-                // In a real app, you would fetch the sale details from the server
-                // For now, we'll simulate with sample data
+                const prescriptionId = $(this).data('id');
                 
                 // Add a spinner to indicate loading
                 $('#saleModalLabel').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
                 
-                // Simulate server delay
-                setTimeout(() => {
-                    $('#saleModalLabel').text('Sale Details');
-                    
-                    // Sample data - replace with AJAX call to fetch real data
-                    const saleData = {
-                        id: saleId,
-                        invoice_no: 'INV-' + (10000 + parseInt(saleId)),
-                        date: '09-Sep-2025-14:30',
-                        status: Math.random() > 0.3 ? 'Completed' : 'Pending',
-                        customer: {
-                            name: 'John Doe',
-                            phone: '+94 76 123 4567',
-                            email: 'john.doe@example.com'
-                        },
-                        items: [
-                            { id: 1, medicine: 'Paracetamol 500mg', quantity: 20, unit_price: 5.00, total: 100.00 },
-                            { id: 2, medicine: 'Amoxicillin 250mg', quantity: 15, unit_price: 15.00, total: 225.00 },
-                            { id: 3, medicine: 'Vitamin C 1000mg', quantity: 10, unit_price: 12.50, total: 125.00 }
-                        ],
-                        subtotal: 450.00,
-                        tax: 22.50,
-                        total: 472.50,
-                        notes: 'Customer requested delivery on next visit.'
-                    };
-                    
-                    // Populate modal with sale details
-                    $('#invoice-no').text(saleData.invoice_no);
-                    $('#sale-date').text(saleData.date);
-                    $('#sale-status').text(saleData.status);
-                    $('#sale-status').removeClass('status-completed status-pending');
-                    $('#sale-status').addClass(saleData.status === 'Completed' ? 'status-completed' : 'status-pending');
-                    
-                    $('#customer-name').text(saleData.customer.name);
-                    $('#customer-phone').text(saleData.customer.phone);
-                    $('#customer-email').text(saleData.customer.email);
-                    
-                    // Clear and populate items table
-                    $('#sale-items').empty();
-                    saleData.items.forEach((item, index) => {
-                        $('#sale-items').append(`
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.medicine}</td>
-                                <td>${item.quantity}</td>
-                                <td>Rs. ${item.unit_price.toFixed(2)}</td>
-                                <td>Rs. ${item.total.toFixed(2)}</td>
-                            </tr>
-                        `);
-                    });
-                    
-                    // Set totals
-                    $('#subtotal').text(`Rs. ${saleData.subtotal.toFixed(2)}`);
-                    $('#tax').text(`Rs. ${saleData.tax.toFixed(2)}`);
-                    $('#total').text(`Rs. ${saleData.total.toFixed(2)}`);
-                    
-                    // Set notes
-                    if (saleData.notes) {
-                        $('#sale-notes').text(saleData.notes);
+                // Fetch prescription details via AJAX
+                $.ajax({
+                    url: `/dashboard/prescription/${prescriptionId}/details`,
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': getCSRFToken()
+                    },
+                    success: function(prescriptionData) {
+                        $('#saleModalLabel').text('Prescription Receipt');
+                        
+                        // Populate modal with prescription details
+                        $('#invoice-no').text(prescriptionData.prescription_number);
+                        $('#sale-date').text(prescriptionData.date);
+                        
+                        $('#customer-name').text(prescriptionData.student_id);
+                        
+                        // Clear and populate items table
+                        $('#sale-items').empty();
+                        prescriptionData.items.forEach((item, index) => {
+                            $('#sale-items').append(`
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.medicine}</td>
+                                    <td>${item.quantity}</td>
+                                </tr>
+                            `);
+                        });
+                        
+                        // Set total items count
+                        $('#total').text(`${prescriptionData.total_quantity}`);
+                        
+                        // Set notes
+                        if (prescriptionData.notes) {
+                            $('#sale-notes').text(prescriptionData.notes);
+                        } else {
+                            $('#sale-notes').text('No additional notes');
+                        }
+                        
+                        // Show modal
+                        if (saleModal) {
+                            saleModal.show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#saleModalLabel').text('Error');
+                        showToast('Failed to load prescription details', 'error');
+                        console.error('Error fetching prescription details:', error);
                     }
-                    
-                    // Show modal
-                    if (saleModal) {
-                        saleModal.show();
-                    }
-                    
-                    
-                }, 800);
+                });
             });
             
             // Delete Sale Button Click
             $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
-                const saleId = $(this).data('id');
-                const invoiceNo = $(this).closest('tr').find('td:eq(1)').text();
+                const prescriptionId = $(this).data('id');
+                const prescriptionNo = $(this).closest('tr').find('td:eq(2)').text(); // prescription number is in column 3
                 
-                $('#confirmDelete').data('id', saleId);
-                // Update delete confirmation message with the invoice number
-                $('#deleteConfirmText').text('Are you sure you want to delete sale with invoice "' + invoiceNo + '"?');
+                $('#confirmDelete').data('id', prescriptionId);
+                // Update delete confirmation message with the prescription number
+                $('#deleteConfirmText').text('Are you sure you want to delete prescription "' + prescriptionNo + '"?');
                 
                 if (deleteModal) {
                     deleteModal.show();
@@ -624,7 +593,7 @@
             
             // Confirm Delete Button Click
             $('#confirmDelete').on('click', function() {
-                const saleId = $(this).data('id');
+                const prescriptionId = $(this).data('id');
                 
                 // Add a spinner to indicate processing
                 $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...');
@@ -637,7 +606,7 @@
                     }
                     
                     // Remove the row from the table
-                    $('button.btn-delete[data-id="' + saleId + '"]').closest('tr').fadeOut(300, function() {
+                    $('button.btn-delete[data-id="' + prescriptionId + '"]').closest('tr').fadeOut(300, function() {
                         $(this).remove();
                         updateTableInfo();
                     });
@@ -647,17 +616,17 @@
                     $(this).prop('disabled', false);
                     
                     // Show success message
-                    showToast('Sale deleted successfully', 'success');
+                    showToast('Prescription deleted successfully', 'success');
                     
                     
                 }, 800);
             });
             
-            // Print Invoice Button Click
+            // Print Prescription Button Click
             $('#printInvoice').on('click', function() {
-                // In a real app, you would implement proper invoice printing logic
+                // In a real app, you would implement proper prescription printing logic
                 // For now, we'll just show a message
-                showToast('Invoice printing initiated', 'info');
+                showToast('Prescription printing initiated', 'info');
             });
             
             // Per page selector change event
