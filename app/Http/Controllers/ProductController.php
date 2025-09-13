@@ -144,4 +144,39 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Failed to add product. Please try again.');
         }
     }
+
+    /**
+     * Show the add product form
+     */
+    public function addProduct()
+    {
+        // Fetch unique categories from products table
+        $dbCategories = Product::distinct()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->pluck('category')
+            ->sort()
+            ->values()
+            ->toArray();
+        
+        // Add "Other" option at the end
+        $categories = array_merge($dbCategories, ['Other']);
+        
+        return view('dashboard.forms.addProduct', compact('categories'));
+    }
+
+    /**
+     * Delete a product
+     */
+    public function deleteProduct($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+
+            return response()->json(['message' => 'Product deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error deleting product'], 500);
+        }
+    }
 }
