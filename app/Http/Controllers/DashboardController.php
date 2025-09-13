@@ -327,14 +327,18 @@ class DashboardController extends Controller
     }
     public function addProduct()
     {
-        $categories = [
-            'Painkillers',
-            'Antibiotics',
-            'Antiseptics',
-            'Antacids',
-            'Laxatives',
-            'Other'
-        ];
+        // Fetch unique categories from products table
+        $dbCategories = Product::distinct()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->pluck('category')
+            ->sort()
+            ->values()
+            ->toArray();
+        
+        // Add "Other" option at the end
+        $categories = array_merge($dbCategories, ['Other']);
+        
         return view('dashboard.forms.addProduct', compact('categories'));
     }
 

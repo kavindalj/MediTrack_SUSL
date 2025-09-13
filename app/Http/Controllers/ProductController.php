@@ -101,4 +101,47 @@ class ProductController extends Controller
             return response()->json([]);
         }
     }
+
+    /**
+     * Store a new product
+     */
+    public function storeProduct(Request $request)
+    {
+        // Custom validation rules
+        $rules = [
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:0',
+            'entry_date' => 'required|date',
+            'expire_date' => 'required|date|after:today',
+        ];
+
+        // Add custom category validation only if category is "Other"
+        if ($request->category === 'Other') {
+            $rules['custom_category'] = 'required|string|max:255';
+        }
+
+        $request->validate($rules);
+
+        try {
+            // Determine the final category
+            $finalCategory = $request->category;
+            if ($request->category === 'Other' && !empty($request->custom_category)) {
+                $finalCategory = $request->custom_category;
+            }
+
+            Product::create([
+                'name' => $request->name,
+                'category' => $finalCategory,
+                'quantity' => $request->quantity,
+                'entry_date' => $request->entry_date,
+                'expire_date' => $request->expire_date,
+            ]);
+
+            return redirect()->route('dashboard.products')->with('success', 'Product added successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error adding product: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to add product. Please try again.');
+        }
+    }
 }

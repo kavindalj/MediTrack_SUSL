@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
 
     Route::get('/dashboard/products/add', [DashboardController::class, 'addProduct'])->name('dashboard.products.add');
+    Route::post('/dashboard/products/store', [ProductController::class, 'storeProduct'])->name('dashboard.products.store');
 
     Route::get('/dashboard/users/add', [DashboardController::class, 'addUser'])->name('dashboard.users.add');
     Route::post('/dashboard/users/add', [DashboardController::class, 'addUserPost'])->name('dashboard.users.add.post');
