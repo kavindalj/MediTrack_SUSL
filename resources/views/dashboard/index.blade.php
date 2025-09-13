@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'MediTrack Dashboard')
-@section('page-title', 'Welcome Kamal!')
+@section('page-title', 'Welcome ' . explode(' ', auth()->user()->name)[0] . '!')
 
 @section('styles')
 <style>
