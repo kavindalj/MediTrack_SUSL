@@ -20,7 +20,7 @@
                 <i class="fas fa-shopping-cart"></i>
                 Prescription
             </a>
-            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.users*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
                 <i class="fas fa-users"></i>
                 Users
             </a>
