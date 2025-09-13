@@ -55,6 +55,21 @@
                     sidebar.classList.toggle('show');
                 });
             }
+            
+            // Handle sidebar active states for products page
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/dashboard/products')) {
+                // Remove active class from all nav links
+                document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // Add active class to products link
+                const productsLink = document.querySelector('.sidebar .nav-link[href*="/dashboard/products"]');
+                if (productsLink) {
+                    productsLink.classList.add('active');
+                }
+            }
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
