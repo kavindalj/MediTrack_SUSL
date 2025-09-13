@@ -360,7 +360,28 @@ class DashboardController extends Controller
             'is_verified' => 1,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'User added successfully.');
+        return redirect()->route('dashboard.users')->with('success', 'User added successfully.');
+    }
+
+    public function verifyPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string'
+        ]);
+
+        $user = auth()->user();
+
+        if (Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Password verified successfully.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect password. Please try again.'
+            ], 422);
+        }
     }
 
     public function updatePassword(Request $request)

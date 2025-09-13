@@ -251,12 +251,12 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>To add a new user, please confirm your admin password:</p>
+                <p>To add a new user, please confirm your password:</p>
                 <div class="mb-3">
-                    <label for="adminPassword" class="form-label">Admin Password</label>
+                    <label for="adminPassword" class="form-label">Your Password</label>
                     <input type="password" class="form-control" id="adminPassword" placeholder="Enter your password" required>
                     <div id="passwordError" class="invalid-feedback">
-                        Password cannot be empty.
+                        Password incorrect.
                     </div>
                 </div>
             </div>
@@ -422,29 +422,55 @@ document.addEventListener('DOMContentLoaded', function() {
         if (password === '') {
             adminPasswordInput.classList.add('is-invalid');
             passwordError.style.display = 'block';
-            passwordError.textContent = 'Password cannot be empty';
+            passwordError.textContent = 'Password incorrect.';
             return;
         }
         
-        // Simulate authentication (no API call)
-        // For demo purposes, we'll use a simple check
-        const isAuthenticated = (password === 'admin123');
+        // Show loading state
+        confirmAddUserBtn.disabled = true;
+        confirmAddUserBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verifying...';
         
-        if (isAuthenticated) {
-        // Close modal
-        authModal.hide();
-
-        // Remove the preventDefault listener
-        addUserForm.removeEventListener('submit', preventFormSubmit);
-
-        // Submit the form
-        addUserForm.submit();
-n
-        } else {
+        // Verify password via AJAX
+        fetch('{{ route("dashboard.users.verify-password") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                password: password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Password verified, close modal and submit form
+                authModal.hide();
+                
+                // Remove the preventDefault listener
+                addUserForm.removeEventListener('submit', preventFormSubmit);
+                
+                // Submit the form
+                addUserForm.submit();
+            } else {
+                // Password incorrect
+                adminPasswordInput.classList.add('is-invalid');
+                passwordError.textContent = data.message || 'Incorrect password. Please try again.';
+                passwordError.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
             adminPasswordInput.classList.add('is-invalid');
-            passwordError.textContent = 'Incorrect password. Please try again.';
+            passwordError.textContent = 'An error occurred. Please try again.';
             passwordError.style.display = 'block';
-        }
+        })
+        .finally(() => {
+            // Reset button state
+            confirmAddUserBtn.disabled = false;
+            confirmAddUserBtn.innerHTML = 'Confirm & Add User';
+        });
     });
 
     function preventFormSubmit(e) {

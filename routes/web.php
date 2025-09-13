@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/users/add', [DashboardController::class, 'addUser'])->name('dashboard.users.add');
     Route::post('/dashboard/users/add', [DashboardController::class, 'addUserPost'])->name('dashboard.users.add.post');
+    Route::post('/dashboard/users/verify-password', [DashboardController::class, 'verifyPassword'])->name('dashboard.users.verify-password');
     Route::delete('/dashboard/users/{id}', [DashboardController::class, 'deleteUsers'])->name('dashboard.users.delete');
 
     Route::post('/dashboard/profile/update-password', [DashboardController::class, 'updatePassword'])->name('dashboard.profile.update-password');
