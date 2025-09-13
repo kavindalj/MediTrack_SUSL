@@ -24,7 +24,7 @@
                 <i class="fas fa-users"></i>
                 Users
             </a>
-            <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.profile*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
                 <i class="fas fa-user"></i>
                 Profile
             </a>
