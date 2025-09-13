@@ -16,7 +16,7 @@
                 <i class="fas fa-pills"></i>
                 Products
             </a>
-            <a class="nav-link {{ request()->routeIs('prescription.*') ? 'active' : '' }}" href="{{ route('dashboard.prescription') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.prescription*') ? 'active' : '' }}" href="{{ route('dashboard.prescription') }}">
                 <i class="fas fa-shopping-cart"></i>
                 Prescription
             </a>
