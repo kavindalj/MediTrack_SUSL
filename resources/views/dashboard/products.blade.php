@@ -79,6 +79,9 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function () {
             $('#productsTable').DataTable({
@@ -95,26 +98,59 @@
         });
 
         function deleteProduct(productId) {
-            if (confirm('Are you sure you want to delete this product?')) {
+            Swal.fire({
+                title: 'Delete Product',
+                text: 'Are you sure you want to delete this product? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                // ensure CSRF header
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
 
+                Swal.fire({
+                    title: 'Deleting...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
                 $.ajax({
                     url: '/dashboard/products/' + productId,
                     type: 'DELETE',
                     success: function(response) {
-                        alert('Product deleted successfully');
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: response.message || 'Product deleted successfully',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // safe reload to reflect changes
+                            location.reload();
+                        });
                     },
                     error: function(xhr) {
-                        alert('Error deleting product: ' + xhr.responseJSON.message);
+                        let msg = 'Error deleting product';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed',
+                            text: msg
+                        });
                     }
                 });
-            }
+            });
         }
     </script>
-
 @endsection
