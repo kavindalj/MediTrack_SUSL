@@ -109,4 +109,81 @@ class PrescriptionController extends Controller
             ], 500);
         }
     }
+
+    public function getPrescriptionDetails($id)
+    {
+        try {
+            $prescription = \App\Models\Prescription::with('prescriptionItems.product')->findOrFail($id);
+            
+            // Format the response
+            $prescriptionData = [
+                'id' => $prescription->id,
+                'prescription_number' => $prescription->prescription_number,
+                'student_id' => $prescription->student_id,
+                'date' => $prescription->created_at->format('d-M-Y H:i'),
+                'notes' => $prescription->notes,
+                'total_items' => $prescription->total_items,
+                'total_quantity' => $prescription->total_quantity,
+                'items' => $prescription->prescriptionItems->map(function($item) {
+                    return [
+                        'medicine' => $item->product->name ?? 'Unknown Medicine',
+                        'quantity' => $item->quantity,
+                        'notes' => $item->notes ?? ''
+                    ];
+                })
+            ];
+            
+            return response()->json($prescriptionData);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Prescription not found'], 404);
+        }
+    }
+
+    public function deletePrescription($id)
+    {
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
+                $prescription = \App\Models\Prescription::with('prescriptionItems.product')->findOrFail($id);
+                
+                // Store prescription number for response message
+                $prescriptionNumber = $prescription->prescription_number;
+                
+                // Manually restore product quantities before deleting
+                foreach ($prescription->prescriptionItems as $item) {
+                    if ($item->product) {
+                        // Get current product quantity
+                        $currentQuantity = $item->product->quantity;
+                        
+                        // Restore the quantity to the product
+                        $item->product->increment('quantity', $item->quantity);
+                        
+                        // Get updated quantity for logging
+                        $item->product->refresh();
+                        $newQuantity = $item->product->quantity;
+                        
+                        // Log for debugging
+                        \Illuminate\Support\Facades\Log::info("Restored {$item->quantity} units to product {$item->product->name} (ID: {$item->product->id}). Quantity: {$currentQuantity} -> {$newQuantity}");
+                    }
+                }
+                
+                // Delete prescription items first
+                $prescription->prescriptionItems()->delete();
+                
+                // Then delete the prescription
+                $prescription->delete();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => "Prescription {$prescriptionNumber} deleted successfully and product quantities restored"
+                ]);
+            });
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to delete prescription {$id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete prescription: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

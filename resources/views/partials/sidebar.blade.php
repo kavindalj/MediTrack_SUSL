@@ -16,10 +16,6 @@
                 <i class="fas fa-tachometer-alt"></i>
                 Dashboard
             </a>
-            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('dashboard.categories') }}">
-                <i class="fas fa-tags"></i>
-                Categories
-            </a>
             <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('dashboard.products') }}">
                 <i class="fas fa-pills"></i>
                 Products
