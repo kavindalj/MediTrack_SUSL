@@ -181,7 +181,7 @@
                                     <button class="btn btn-action btn-edit" title="Edit User" onclick="editUser({{ $user['id'] }})">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-action btn-delete" title="Delete User" onclick="deleteUser('{{ route('dashboard.users.delete', ['id' => $user->id]) }}', '{{ $user['name'] }}')">
+                                    <button class="btn btn-action btn-delete" title="Delete User" onclick="deleteUser('{{ route('dashboard.users.delete', ['id' => $user->id]) }}', '{{ $user['name'] }}', {{ $user['id'] }})">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -222,13 +222,11 @@
 @section('scripts')
 <script>
     function editUser(userId) {
-        // For now, just show an alert - you can implement this later
-        alert(`Edit user functionality will be implemented for user ID: ${userId}`);
-        // When ready, you can redirect to edit page:
-        // window.location.href = `/dashboard/users/${userId}/edit`;
+        Swal.fire('Edit', `Edit user functionality will be implemented for user ID: ${userId}`, 'info');
+        // Later: window.location.href = `/dashboard/users/${userId}/edit`;
     }
 
-    function deleteUser(url, userName) {
+    function deleteUser(url, userName, userId) {
         Swal.fire({
             title: `Delete user "${userName}"?`,
             text: "This action cannot be undone!",
@@ -239,62 +237,59 @@
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                // When confirmed, send DELETE request
-                fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Remove row dynamically
-                        const row = document.getElementById(`user-row-${url.split('/').pop()}`);
-                        if (row) row.remove();
+            if (!result.isConfirmed) return;
 
-                        Swal.fire(
-                            'Deleted!',
-                            `User "${userName}" has been deleted.`,
-                            'success'
-                        );
-                    } else {
-                        Swal.fire(
-                            'Failed!',
-                            'Failed to delete user. Please try again.',
-                            'error'
-                        );
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire(
-                        'Error!',
-                        'An error occurred while deleting the user.',
-                        'error'
-                    );
-                });
-            }
+            // Show deleting animation
+            Swal.fire({
+                title: 'Deleting...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove row dynamically
+                    const row = document.getElementById(`user-row-${userId}`);
+                    if (row) row.remove();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: `User "${userName}" has been deleted.`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Failed!', 'Failed to delete user. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'An error occurred while deleting the user.', 'error');
+            });
         });
     }
 
-
-    // Handle search functionality
+    // Search + Entries (still stubbed)
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('input[type="search"]');
         const entriesSelect = document.querySelector('.form-select');
         
         if (searchInput) {
             searchInput.addEventListener('input', function() {
-                // Implement search functionality here
                 console.log('Search term:', this.value);
             });
         }
 
         if (entriesSelect) {
             entriesSelect.addEventListener('change', function() {
-                // Implement entries per page functionality here
                 console.log('Entries per page:', this.value);
             });
         }
