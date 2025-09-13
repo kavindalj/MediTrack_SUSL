@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/products/add', [DashboardController::class, 'addProduct'])->name('dashboard.products.add');
     Route::post('/dashboard/products/store', [ProductController::class, 'storeProduct'])->name('dashboard.products.store');
+    Route::delete('/dashboard/products/{id}', [DashboardController::class, 'deleteProduct'])->name('dashboard.products.delete');
 
     Route::get('/dashboard/users/add', [DashboardController::class, 'addUser'])->name('dashboard.users.add');
     Route::post('/dashboard/users/add', [DashboardController::class, 'addUserPost'])->name('dashboard.users.add.post');
