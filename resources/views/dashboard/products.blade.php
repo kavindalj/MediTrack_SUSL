@@ -43,28 +43,23 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Category</th>
-                        <th>Price</th>
                         <th>Quantity</th>
-                        <th>Discount</th>
-                        <th>Expiry Date</th>
-                        <th width="120">Action</th>
+                        <th>Expire Date</th>
+                        <th>Entry Date</th>
+                        <th width="80">Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     @foreach ($products as $product)
                         <tr>
-                            <td>{{ $product['name'] }}</td>
-                            <td>{{ $product['category'] }}</td>
-                            <td>Rs {{ number_format($product['price'], 2) }}</td>
-                            <td>{{ $product['quantity'] }}</td>
-                            <td>{{ $product['discount'] }}</td>
-                            <td>{{ $product['expiry_date'] }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->category }}</td>
+                            <td>{{ $product->quantity }}</td>
+                            <td>{{ $product->expire_date ? $product->expire_date->format('d M, Y') : 'N/A' }}</td>
+                            <td>{{ $product->entry_date ? $product->entry_date->format('d M, Y') : 'N/A' }}</td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-info text-white me-1">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-danger">
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct({{ $product->id }})">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
@@ -77,14 +72,6 @@
 @endsection
 
 @section('scripts')
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- DataTables (Core + Bootstrap 5 Integration) -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
-    @section('scripts')
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -106,6 +93,28 @@
                 order: [] // Default: no pre-sorting applied when table loads
             });
         });
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: '/dashboard/products/' + productId,
+                    type: 'DELETE',
+                    success: function(response) {
+                        alert('Product deleted successfully');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Error deleting product: ' + xhr.responseJSON.message);
+                    }
+                });
+            }
+        }
     </script>
 
 @endsection

@@ -112,34 +112,12 @@ class DashboardController extends Controller
     }
     public function products()
     {
-            $products = [
-        [
-            'name' => 'Paracetamol',
-            'category' => 'Pain Relief',
-            'price' => 120.00,
-            'quantity' => 50,
-            'discount' => '0%',
-            'expiry_date' => '12 Dec, 2025',
-        ],
-        [
-            'name' => 'Amoxicillin',
-            'category' => 'Antibiotic',
-            'price' => 250.00,
-            'quantity' => 80,
-            'discount' => '5%',
-            'expiry_date' => '01 Jan, 2026',
-        ],
-        [
-            'name' => 'Cetirizine',
-            'category' => 'Allergy',
-            'price' => 90.00,
-            'quantity' => 120,
-            'discount' => '0%',
-            'expiry_date' => '05 May, 2026',
-        ],
-    ];
+        // Fetch real products from database
+        $products = Product::select('id', 'name', 'category', 'quantity', 'expire_date', 'entry_date')
+            ->orderBy('name')
+            ->get();
 
-    return view('dashboard.products', compact('products'));
+        return view('dashboard.products', compact('products'));
     }
     public function Prescription()
     {
@@ -308,6 +286,18 @@ class DashboardController extends Controller
         return response()->json(['message' => 'User deleted successfully']);
     }
 
+    public function deleteProduct($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+
+            return response()->json(['message' => 'Product deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error deleting product'], 500);
+        }
+    }
+
 
     public function profile()
     {
@@ -327,14 +317,18 @@ class DashboardController extends Controller
     }
     public function addProduct()
     {
-        $categories = [
-            'Painkillers',
-            'Antibiotics',
-            'Antiseptics',
-            'Antacids',
-            'Laxatives',
-            'Other'
-        ];
+        // Fetch unique categories from products table
+        $dbCategories = Product::distinct()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->pluck('category')
+            ->sort()
+            ->values()
+            ->toArray();
+        
+        // Add "Other" option at the end
+        $categories = array_merge($dbCategories, ['Other']);
+        
         return view('dashboard.forms.addProduct', compact('categories'));
     }
 
