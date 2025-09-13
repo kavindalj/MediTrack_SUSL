@@ -7,10 +7,6 @@
         </a>
         
         <!-- Main Navigation -->
-        <div class="mb-3">
-            <small class="text-light text-uppercase fw-bold">Main</small>
-        </div>
-        
         <nav class="nav flex-column">
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fas fa-tachometer-alt"></i>
