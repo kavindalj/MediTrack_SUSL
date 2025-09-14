@@ -181,6 +181,19 @@
     #clear-search-button.visible {
         display: block;
     }
+
+    .search-box {
+        display: flex;
+        align-items: center; 
+        gap: 10px;           
+    }
+
+    .search-box label {
+        margin: 0;          
+        font-weight: 500;  
+    }
+
+
 </style>
 @endsection
 
@@ -237,11 +250,12 @@
                     </div>
                     
                     <div class="search-box">
+                        <label>Search:</label>
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" placeholder="Search prescriptions..." id="search-input" value="{{ request('search') }}">
-                            <button class="btn btn-sm btn-outline-secondary" type="button" id="search-button">
+                            <input type="text" class="form-control form-control-sm" id="search-input" value="{{ request('search') }}">
+                            <!-- <button class="btn btn-sm btn-outline-secondary" type="button" id="search-button">
                                 <i class="fas fa-search"></i>
-                            </button>
+                            </button> -->
                             <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-search-button">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -254,10 +268,10 @@
                         <thead>
                             <tr>
                                 <th scope="col" width="5%">#</th>
-                                <th scope="col" width="15%">Student ID</th>
-                                <th scope="col" width="15%">Prescription No</th>
-                                <th scope="col" width="25%">Medicines</th>
-                                <th scope="col" width="15%">Date</th>
+                                <th scope="col" width="15%">Student ID <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="15%">Prescription No <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="25%">Medicines <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="15%">Date <i class="fas fa-sort text-muted"></i></th>
                                 <th scope="col" width="15%">Actions</th>
                             </tr>
                         </thead>

@@ -15,24 +15,47 @@
         rel="stylesheet" 
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
+
+        <!-- Custom CSS -->
+    <style>
+        table.dataTable thead .sorting:before,
+        table.dataTable thead .sorting:after,
+        table.dataTable thead .sorting_asc:before,
+        table.dataTable thead .sorting_asc:after,
+        table.dataTable thead .sorting_desc:before,
+        table.dataTable thead .sorting_desc:after {
+            display: none !important;
+        }
+
+        /* Adjustable DataTables search bar position */
+    .dataTables_filter {
+        float: left !important;
+        text-align: left !important;
+        margin-left: 325px; 
+        margin-bottom: 10px;
+        padding: 5px;   
+        }
+
+    </style>
+
 @endsection
 
 @section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Products</li>
+                </ol>
+            </nav>
+
     <div class="table-container">
-
-        <!-- Page header (breadcrumb + Add button) -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <!-- Optional title/breadcrumbs -->
-                <!-- 
-                    <h5 class="mb-1">Products</h5>
-                    <small class="text-muted">Dashboard / Products</small> 
-                -->
-            </div>
-
-            <!-- Add product button -->
+        <div class="d-flex justify-content-end align-items-center mb-3">
             <a href="{{ route('dashboard.products.add') }}" class="btn btn-primary">
-                Add Product
+                <i class="fas fa-plus me-2"></i>Add Product
             </a>
         </div>
 
@@ -40,14 +63,14 @@
         <div class="table-responsive">
             <table id="productsTable" class="table table-striped table-hover align-middle">
                 <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Expire Date</th>
-                        <th>Entry Date</th>
+                     <tr>
+                        <th>Product Name <i class="fas fa-sort text-muted"></i></th>
+                        <th>Category <i class="fas fa-sort text-muted"></i></th>
+                        <th>Quantity <i class="fas fa-sort text-muted"></i></th>
+                        <th>Expire Date <i class="fas fa-sort text-muted"></i></th>
+                        <th>Entry Date <i class="fas fa-sort text-muted"></i></th>
                         <th width="80">Action</th>
-                    </tr>
+                        </tr>
                 </thead>
 
                 <tbody>
