@@ -7,10 +7,6 @@
         </a>
         
         <!-- Main Navigation -->
-        <div class="mb-3">
-            <small class="text-light text-uppercase fw-bold">Main</small>
-        </div>
-        
         <nav class="nav flex-column">
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fas fa-tachometer-alt"></i>
@@ -20,15 +16,15 @@
                 <i class="fas fa-pills"></i>
                 Products
             </a>
-            <a class="nav-link {{ request()->routeIs('prescription.*') ? 'active' : '' }}" href="{{ route('dashboard.prescription') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.prescription*') ? 'active' : '' }}" href="{{ route('dashboard.prescription') }}">
                 <i class="fas fa-shopping-cart"></i>
                 Prescription
             </a>
-            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.users*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
                 <i class="fas fa-users"></i>
                 Users
             </a>
-            <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
+            <a class="nav-link {{ request()->routeIs('dashboard.profile*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
                 <i class="fas fa-user"></i>
                 Profile
             </a>
