@@ -15,12 +15,12 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Create default admin user
+        // Create default pharmacist user
         User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@meditrack.com',
+            'name' => 'Pharmacist User',
+            'email' => 'pharmacist@meditrack.com',
             'password' => Hash::make('password123'),
-            'role' => 'admin',
+            'role' => 'pharmacist',
             'is_verified' => true,
         ]);
     }

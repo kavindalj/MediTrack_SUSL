@@ -172,7 +172,7 @@
                                 <td>{{ $user['name'] }}</td>
                                 <td>{{ $user['email'] }}</td>
                                 <td>
-                                    <span class="role-badge {{ $user['role'] === 'super-admin' ? 'super-admin-badge' : '' }}">
+                                    <span class="role-badge">
                                         {{ str_replace('-', ' ', $user['role']) }}
                                     </span>
                                 </td>
@@ -261,8 +261,8 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" required>
-                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
-                                <option value="user" ${userData.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="pharmacist" ${userData.role === 'pharmacist' ? 'selected' : ''}>Pharmacist</option>
+                                <option value="doctor" ${userData.role === 'doctor' ? 'selected' : ''}>Doctor</option>
                             </select>
                         </div>
                         <div class="mb-3">

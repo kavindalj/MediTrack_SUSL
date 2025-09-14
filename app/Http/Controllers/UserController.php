@@ -15,8 +15,8 @@ class UserController extends Controller
     {
         // Define available roles for the form (could come from database in real application)
         $roles = [
-            'admin' => 'Admin',
-            'user' => 'User', 
+            'pharmacist' => 'Pharmacist',
+            'doctor' => 'Doctor', 
             
         ];
         return view('dashboard.forms.addUser', compact('roles'));
@@ -31,7 +31,7 @@ class UserController extends Controller
             'name' => 'required|string|min:2',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'role' => 'required|string|in:admin,user',
+            'role' => 'required|string|in:pharmacist,doctor',
         ]);
 
         $user = User::create([
@@ -106,7 +106,7 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|string|min:2',
             'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|string|in:admin,user',
+            'role' => 'required|string|in:pharmacist,doctor',
         ];
         
         // Only validate password if it's being updated
