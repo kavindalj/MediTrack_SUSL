@@ -32,7 +32,7 @@
     <div class="table-container">
         <div class="d-flex justify-content-end align-items-center mb-3">
             <a href="{{ route('dashboard.products.add') }}" class="btn btn-primary">
-                Add Product
+                <i class="fas fa-plus me-2"></i>Add Product
             </a>
         </div>
 
