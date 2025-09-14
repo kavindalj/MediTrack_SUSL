@@ -26,6 +26,16 @@
         table.dataTable thead .sorting_desc:after {
             display: none !important;
         }
+
+        /* Adjustable DataTables search bar position */
+    .dataTables_filter {
+        float: left !important;
+        text-align: left !important;
+        margin-left: 325px; 
+        margin-bottom: 10px;
+        padding: 5px;   
+        }
+
     </style>
 
 @endsection
