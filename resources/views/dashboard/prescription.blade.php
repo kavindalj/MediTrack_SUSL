@@ -175,6 +175,7 @@
         font-weight: 500;  
     }
 
+
 </style>
 @endsection
 
@@ -247,10 +248,10 @@
                         <thead>
                             <tr>
                                 <th scope="col" width="5%">#</th>
-                                <th scope="col" width="15%">Student ID</th>
-                                <th scope="col" width="15%">Prescription No</th>
-                                <th scope="col" width="25%">Medicines</th>
-                                <th scope="col" width="15%">Date</th>
+                                <th scope="col" width="15%">Student ID <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="15%">Prescription No <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="25%">Medicines <i class="fas fa-sort text-muted"></i></th>
+                                <th scope="col" width="15%">Date <i class="fas fa-sort text-muted"></i></th>
                                 <th scope="col" width="15%">Actions</th>
                             </tr>
                         </thead>
