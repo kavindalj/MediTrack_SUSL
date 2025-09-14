@@ -31,8 +31,18 @@
         border-color: #0d6ffc;
     }
 
-    .btn-primary:hover {
-        background-color: #1163d6;
+    .btn-prima                    // Update display elements in profile
+                    const displayName = document.getElementById('displayName');
+                    const displayEmail = document.getElementById('displayEmail');
+                    
+                    console.log('Display elements found:', {
+                        displayName: !!displayName,
+                        displayEmail: !!displayEmail
+                    });
+                    
+                    // Update display values in profile
+                    if (displayName) displayName.textContent = data.user.name;
+                    if (displayEmail) displayEmail.textContent = data.user.email;    background-color: #1163d6;
         border-color: #1163d6;
     }
 
@@ -409,17 +419,6 @@
                             Please enter a valid email address.
                         </div>
                     </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="editRole" class="form-label">User Role</label>
-                        <select class="form-control" id="editRole" name="role" required>
-                            <option value="admin" {{ $userData['role'] === 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="user" {{ $userData['role'] === 'user' ? 'selected' : '' }}>User</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a user role.
-                        </div>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -556,17 +555,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset form fields to current user data (ensuring fresh data)
         const currentName = document.getElementById('displayName').textContent.trim();
         const currentEmail = document.getElementById('displayEmail').textContent.trim();
-        const currentRole = document.getElementById('displayRole').textContent.trim();
         
         document.getElementById('editName').value = currentName;
         document.getElementById('editEmail').value = currentEmail;
-        document.getElementById('editRole').value = currentRole;
         
         // Log current data for debugging
         console.log('Modal opened with current data:', {
             name: currentName,
-            email: currentEmail,
-            role: currentRole
+            email: currentEmail
         });
         
         modal.style.display = 'block';
@@ -628,16 +624,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get form elements
         const nameInput = document.getElementById('editName');
         const emailInput = document.getElementById('editEmail');
-        const roleSelect = document.getElementById('editRole');
         
         // Debug: Check if form elements exist
         console.log('Form elements found:', {
             nameInput: !!nameInput,
-            emailInput: !!emailInput,
-            roleSelect: !!roleSelect
+            emailInput: !!emailInput
         });
         
-        if (!nameInput || !emailInput || !roleSelect) {
+        if (!nameInput || !emailInput) {
             console.error('Form elements missing!');
             return;
         }
@@ -645,7 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset custom validity
         nameInput.setCustomValidity('');
         emailInput.setCustomValidity('');
-        roleSelect.setCustomValidity('');
         
         // Custom validation
         let isValid = true;
@@ -663,32 +656,23 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
         
-        // Validate role
-        if (!roleSelect.value) {
-            roleSelect.setCustomValidity('Please select a user role');
-            isValid = false;
-        }
-        
         console.log('Validation results:', {
             isValid: isValid,
             formValid: form.checkValidity(),
             nameValue: nameInput.value,
-            emailValue: emailInput.value,
-            roleValue: roleSelect.value
+            emailValue: emailInput.value
         });
         
         if (form.checkValidity() && isValid) {
             // Get form values first
             const name = nameInput.value.trim();
             const email = emailInput.value.trim();
-            const role = roleSelect.value;
             
             // Check if data has actually changed
             const currentName = document.getElementById('displayName').textContent.trim();
             const currentEmail = document.getElementById('displayEmail').textContent.trim();
-            const currentRole = document.getElementById('displayRole').textContent.trim();
             
-            if (name === currentName && email === currentEmail && role === currentRole) {
+            if (name === currentName && email === currentEmail) {
                 showErrorMessage('No changes detected. Please modify at least one field before saving.');
                 return;
             }
@@ -699,13 +683,12 @@ document.addEventListener('DOMContentLoaded', function() {
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
             
             // Log the data being sent for debugging
-            console.log('Sending profile update:', { name, email, role });
+            console.log('Sending profile update:', { name, email });
             
             // Prepare form data with proper validation
             const formData = new FormData();
             formData.append('name', name);
             formData.append('email', email);
-            formData.append('role', role);
             formData.append('_token', '{{ csrf_token() }}');
             
             console.log('About to send AJAX request...');
@@ -758,14 +741,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         profileHeaderEmail.textContent = data.user.email;
                     }
                     
-                    // Update navbar user name and role
+                    // Update navbar user name
                     const navbarUserName = document.getElementById('navbar-user-name');
-                    const navbarUserRole = document.getElementById('navbar-user-role');
                     if (navbarUserName) {
                         navbarUserName.textContent = data.user.name + '\u00A0'; // \u00A0 is non-breaking space
-                    }
-                    if (navbarUserRole) {
-                        navbarUserRole.textContent = '(' + data.user.role + ')';
                     }
                     
                     // Hide modal
@@ -793,9 +772,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (error.errors.name) {
                         errorMessage = error.errors.name[0];
                         if (nameInput) nameInput.classList.add('is-invalid');
-                    } else if (error.errors.role) {
-                        errorMessage = error.errors.role[0];
-                        if (roleSelect) roleSelect.classList.add('is-invalid');
                     } else {
                         errorMessage = Object.values(error.errors)[0][0];
                     }
@@ -923,15 +899,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             this.setCustomValidity('Please enter a valid email address');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-
-    // Real-time role validation
-    document.getElementById('editRole').addEventListener('change', function() {
-        if (!this.value) {
-            this.setCustomValidity('Please select a user role');
         } else {
             this.setCustomValidity('');
         }

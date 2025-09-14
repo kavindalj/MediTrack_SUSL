@@ -63,7 +63,6 @@ class ProfileController extends Controller
             $request->validate([
                 'name' => 'required|string|min:2|max:255',
                 'email' => 'required|email|unique:users,email,' . auth()->id(),
-                'role' => 'required|string|in:admin,user',
             ], [
                 'name.required' => 'Name is required.',
                 'name.min' => 'Name must be at least 2 characters long.',
@@ -71,8 +70,6 @@ class ProfileController extends Controller
                 'email.required' => 'Email is required.',
                 'email.email' => 'Please enter a valid email address.',
                 'email.unique' => 'This email is already taken by another user.',
-                'role.required' => 'User role is required.',
-                'role.in' => 'Invalid user role selected.',
             ]);
 
             $user = auth()->user();
@@ -81,7 +78,6 @@ class ProfileController extends Controller
             $updated = $user->update([
                 'name' => trim($request->name),
                 'email' => trim($request->email),
-                'role' => $request->role,
             ]);
 
             if (!$updated) {
@@ -97,7 +93,6 @@ class ProfileController extends Controller
                 'user' => [
                     'name' => $user->name,
                     'email' => $user->email,
-                    'role' => $user->role,
                 ]
             ]);
             
