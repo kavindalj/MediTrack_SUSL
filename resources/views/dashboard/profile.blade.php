@@ -7,34 +7,43 @@
 <style>
     /* Minimal scoped styles for exact design match */
     .nav-tabs .nav-link.active {
-        background-color: rgba(23, 162, 184, 0.1);
-        border-color: transparent transparent #17a2b8 transparent;
-        color: #17a2b8 !important;
+        background-color: rgba(13, 111, 252, 0.1);
+         border-bottom: 2px solid #0d6ffc;
+        color: #0d6ffc !important;
         font-weight: 500;
     }
 
     .nav-tabs .nav-link:hover {
         border-color: transparent;
-        color: #17a2b8;
+        color: #0d6ffc;
     }
 
     .nav-tabs {
-        border-bottom: 1px solid #dee2e6;
-    }
+        border-bottom: 1px solid #0d6ffc
+    }
 
     .font-weight-semibold {
         font-weight: 600;
     }
 
     .btn-primary {
-        background-color: #17a2b8;
-        border-color: #17a2b8;
+        background-color: #0d6ffc;
+        border-color: #0d6ffc;
     }
 
     .btn-primary:hover {
-        background-color: #138496;
-        border-color: #117a8b;
+        background-color: #1163d6;
+        border-color: #1163d6;
     }
+
+    .btn-edit {
+        background-color: #00bcd4;
+        color: white;
+    }
+    .btn-edit:hover {
+        background-color: #00acc1;
+        color: white;
+    }
 
     /* Modal styling */
     .modal-backdrop {
@@ -219,7 +228,7 @@
                        role="tab" 
                        aria-controls="about" 
                        aria-selected="true"
-                       style="color: #17a2b8; border-bottom: 2px solid #17a2b8;">
+                       style="color: #0d6ffc; border-bottom: 2px solid #0d6ffc;">
                         About
                     </a>
                 </li>
@@ -249,14 +258,11 @@
                             <h5 class="mb-0">Personal Details</h5>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="editPersonalDetailsBtn" aria-label="Edit personal details">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                Edit
+                            <button type="button" title="Edit" class="btn  btn-edit btn-sm" id="editPersonalDetailsBtn" aria-label="Edit personal details">
+                               <i class="fas fa-edit"></i>
+                                
                             </button>
-                        </div>
+                        </div>
                     </div>
 
                     <!-- Personal Details Rows -->
@@ -488,8 +494,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
         // Update tab appearance
         activeTab.classList.add('active');
-        activeTab.style.color = '#17a2b8';
-        activeTab.style.borderBottom = '2px solid #17a2b8';
+        activeTab.style.color = '#0d6ffc';
+        activeTab.style.borderBottom = '2px solid #0d6ffc';
         activeTab.setAttribute('aria-selected', 'true');
         
         inactiveTab.classList.remove('active');
