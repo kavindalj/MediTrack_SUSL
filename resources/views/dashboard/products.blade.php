@@ -36,6 +36,49 @@
         padding: 5px;   
         }
 
+        /* Position filter next to length menu */
+        .dataTables_length {
+            display: flex !important;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .expired-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #495057;
+            margin: 0;
+        }
+
+        .expired-filter input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .expired-filter label {
+            margin: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Highlight expired rows */
+        .expired-row {
+            background-color: #ffebee !important;
+            color: #c62828;
+        }
+
+        .expired-row:hover {
+            background-color: #ffcdd2 !important;
+        }
+
     </style>
 
 @endsection
@@ -75,11 +118,31 @@
 
                 <tbody>
                     @foreach ($products as $product)
-                        <tr>
+                        @php
+                            $isExpired = $product->expire_date && $product->expire_date->isPast();
+                            $isAvailable = $product->quantity > 0;
+                        @endphp
+                        @continue($product->quantity <= 0)
+                        <tr class="{{ $isExpired ? 'expired-row' : '' }}" data-expired="{{ $isExpired ? 'true' : 'false' }}" data-qty="{{ (int) $product->quantity }}" data-expiry="{{ $product->expire_date ? $product->expire_date->toDateString() : '' }}">
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category }}</td>
-                            <td>{{ $product->quantity }}</td>
-                            <td>{{ $product->expire_date ? $product->expire_date->format('d M, Y') : 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-success">{{ $product->quantity }}</span>
+                            </td>
+                            <td>
+                                @if($product->expire_date)
+                                    @if($isExpired)
+                                        <span class="text-danger fw-bold">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ $product->expire_date->format('d M, Y') }}
+                                        </span>
+                                    @else
+                                        {{ $product->expire_date->format('d M, Y') }}
+                                    @endif
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td>{{ $product->entry_date ? $product->entry_date->format('d M, Y') : 'N/A' }}</td>
                             <td>
                                 <button class="btn btn-sm btn-danger" onclick="deleteProduct({{ $product->id }})">
@@ -107,7 +170,8 @@
 
     <script>
         $(document).ready(function () {
-            $('#productsTable').DataTable({
+            // Initialize DataTable with custom DOM
+            var table = $('#productsTable').DataTable({
                 pageLength: 10,
                 lengthMenu: [5, 10, 25, 50],
                 columnDefs: [
@@ -116,8 +180,76 @@
                         targets: -1 // Disable sorting only for the "Action" column
                     }
                 ],
-                order: [] // Default: no pre-sorting applied when table loads
+                order: [], // Default: no pre-sorting applied when table loads
+                initComplete: function() {
+                    // Add expired filter checkbox to the length menu area
+                    var expiredFilterHtml = `
+                        <div class="expired-filter">
+                            <input type="checkbox" id="expiredFilter" name="expiredFilter">
+                            <label for="expiredFilter">
+                                <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                Show Expired Medicines 
+                            </label>
+                        </div>
+                    `;
+                    
+                        $('.dataTables_length').append(expiredFilterHtml);
+
+                        // If the checkbox is pre-checked (browser back/restore), apply filter now
+                        var $expiredCb = $('#expiredFilter');
+                        if ($expiredCb.prop('checked')) {
+                            $expiredCb.trigger('change');
+                        }
+                }
             });
+
+                // Keep reference to our custom filter so we can remove it reliably
+                var expiredFilterFn = null;
+
+                // Expired medicines filter functionality
+                $(document).on('change', '#expiredFilter', function() {
+                    var isChecked = this.checked;
+
+                    // If we previously added our filter, remove it first
+                    if (expiredFilterFn) {
+                        var idx = $.fn.dataTable.ext.search.indexOf(expiredFilterFn);
+                        if (idx !== -1) {
+                            $.fn.dataTable.ext.search.splice(idx, 1);
+                        }
+                        expiredFilterFn = null;
+                    }
+
+                    if (isChecked) {
+                        // Show only expired medicines (that have stock > 0)
+                        expiredFilterFn = function(settings, data, dataIndex) {
+                            var row = table.row(dataIndex).node();
+                            var $row = $(row);
+                            // Boolean flag precomputed on server
+                            var flagExpired = ($row.data('expired') === true) || ($row.attr('data-expired') === 'true');
+
+                            // Fallback: compute by date if available
+                            var expiryStr = $row.attr('data-expiry') || '';
+                            var expiredByDate = false;
+                            if (expiryStr) {
+                                var expiry = new Date(expiryStr + 'T00:00:00');
+                                var today = new Date();
+                                // Compare using local date (set time to midnight)
+                                today.setHours(0,0,0,0);
+                                if (!isNaN(expiry)) {
+                                    expiredByDate = expiry.getTime() <= today.getTime();
+                                }
+                            }
+
+                            var isExpired = flagExpired || expiredByDate;
+                            var qty = parseFloat($row.data('qty')) || 0;
+                            return isExpired && qty > 0;
+                        };
+                        $.fn.dataTable.ext.search.push(expiredFilterFn);
+                    }
+
+                    // Redraw the table to apply filter
+                    table.draw();
+                });
         });
 
         function deleteProduct(productId) {
