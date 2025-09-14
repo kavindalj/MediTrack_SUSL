@@ -5,6 +5,8 @@
 
 @section('styles')
 <style>
+
+
 .dashboard-card {
     border: none;
     border-radius: 12px;
@@ -91,6 +93,57 @@
 
 .dashboard-card.card-yellow .card-icon {
     background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+/* Action button styles */
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.btn-view {
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+}
+
+.btn-action {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 4px;
+    border: none;
+    margin: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background-color: #00bcd4;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #00acc1;
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: #00acc1;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    color: white;
 }
 
 /* Responsive adjustments */
@@ -213,6 +266,7 @@
                                 <th>Total Items</th>
                                 <th>Total Quantity</th>
                                 <th class="text-center">Prescription Number</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -223,6 +277,13 @@
                                 <td class="text-center">{{ $prescription['total_items'] }}</td>
                                 <td class="text-center">{{ $prescription['total_quantity'] }}</td>
                                 <td class="text-center">{{ $prescription['prescription_number'] }}</td>
+                                <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-action btn-view" data-id="{{ $prescription['id'] }}" onclick="showPrescriptionReceipt({{ $prescription['id'] }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
                             </tr>
                             @empty
                             <tr>
@@ -256,8 +317,230 @@
         </div>
     </div>
 </div>
+
+<!-- View Prescription Details Modal -->
+<div class="modal fade" id="saleModal" tabindex="-1" aria-labelledby="saleModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleModalLabel">Prescription Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="mb-2">Prescription Information</h6>
+                        <p class="mb-1"><strong>Prescription No:</strong> <span id="invoice-no"></span></p>
+                        <p class="mb-1"><strong>Date:</strong> <span id="sale-date"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-2">Student Information</h6>
+                        <p class="mb-1"><strong>Student ID:</strong> <span id="customer-name"></span></p>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4 mb-3">Items</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Medicine</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sale-items">
+                            <!-- Prescription items will be inserted here -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" class="text-end fw-bold">Total :</td>
+                                <td id="total" class="fw-bold">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="mt-3">
+                    <h6 class="mb-2">Notes</h6>
+                    <p id="sale-notes" class="mb-0 text-muted fst-italic">No notes available</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="printInvoice">
+                    <i class="fas fa-print me-1"></i> Print Prescription
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <!-- add custom scripts here if needed -->
+<script>
+    // Initialize modals with proper focus handling
+    const saleModalEl = document.getElementById('saleModal');
+    
+    // Create modal instances with proper options
+    let saleModal = null;
+    
+    if (saleModalEl) {
+        // Create the modal instance
+        saleModal = new bootstrap.Modal(saleModalEl, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+    }
+    
+    // jQuery code for modal interactions
+    if (typeof jQuery !== 'undefined') {
+        // Helper function to get CSRF token for AJAX requests
+        function getCSRFToken() {
+            return $('meta[name="csrf-token"]').attr('content');
+        }
+        
+        // View Prescription Button Click
+        $(document).on('click', '.btn-view', function(e) {
+            e.preventDefault();
+            const prescriptionId = $(this).data('id');
+            
+            // Add a spinner to indicate loading
+            $('#saleModalLabel').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
+            
+            // Fetch prescription details via AJAX
+            $.ajax({
+                url: `/dashboard/prescription/${prescriptionId}/details`,
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': getCSRFToken()
+                },
+                success: function(prescriptionData) {
+                    $('#saleModalLabel').text('Prescription Receipt');
+                    
+                    // Populate modal with prescription details
+                    $('#invoice-no').text(prescriptionData.prescription_number);
+                    $('#sale-date').text(prescriptionData.date);
+                    
+                    $('#customer-name').text(prescriptionData.student_id);
+                    
+                    // Clear and populate items table
+                    $('#sale-items').empty();
+                    prescriptionData.items.forEach((item, index) => {
+                        $('#sale-items').append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.medicine}</td>
+                                <td>${item.quantity}</td>
+                            </tr>
+                        `);
+                    });
+                    
+                    // Set total items count
+                    $('#total').text(`${prescriptionData.total_quantity}`);
+                    
+                    // Set notes
+                    if (prescriptionData.notes) {
+                        $('#sale-notes').text(prescriptionData.notes);
+                    } else {
+                        $('#sale-notes').text('No additional notes');
+                    }
+                    
+                    // Show modal
+                    if (saleModal) {
+                        saleModal.show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#saleModalLabel').text('Error');
+                    console.error('Error fetching prescription details:', error);
+                    alert('Failed to load prescription details');
+                }
+            });
+        });
+        
+        // Print Prescription Button Click
+        $('#printInvoice').on('click', function() {
+            // Get the current prescription data from the modal
+            const prescriptionNumber = $('#invoice-no').text();
+            const studentId = $('#customer-name').text();
+            const date = $('#sale-date').text();
+            const notes = $('#sale-notes').text();
+            const totalQuantity = $('#total').text();
+            
+            // Collect items from the modal table
+            const items = [];
+            $('#sale-items tr').each(function() {
+                const row = $(this);
+                const medicine = row.find('td:eq(1)').text();
+                const quantity = row.find('td:eq(2)').text();
+                
+                if (medicine && quantity) {
+                    items.push({
+                        medicine: medicine,
+                        quantity: parseInt(quantity) || 0
+                    });
+                }
+            });
+            
+            // Create prescription data object
+            const prescriptionData = {
+                prescription_number: prescriptionNumber,
+                student_id: studentId,
+                date: date,
+                notes: notes !== 'No additional notes' ? notes : '',
+                total_quantity: parseInt(totalQuantity) || 0,
+                items: items
+            };
+            
+            // Show loading state
+            const originalText = $(this).html();
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating PDF...');
+            $(this).prop('disabled', true);
+            
+            // Generate PDF using the global function
+            generatePrescriptionPDF(prescriptionData)
+                .then(() => {
+                    // Reset button
+                    $('#printInvoice').html(originalText);
+                    $('#printInvoice').prop('disabled', false);
+                    showToast('Prescription PDF generated successfully', 'success');
+                })
+                .catch((error) => {
+                    // Reset button
+                    $('#printInvoice').html(originalText);
+                    $('#printInvoice').prop('disabled', false);
+                    showToast('Failed to generate PDF: ' + error.message, 'danger');
+                    console.error('PDF generation error:', error);
+                });
+        });
+        
+        // Show toast notification
+        function showToast(message, type) {
+            // Create toast container if it doesn't exist
+            if (!$('#toast-container').length) {
+                $('body').append('<div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>');
+            }
+            
+            // Create toast element
+            const toast = $('<div class="toast align-items-center text-white bg-' + type + ' border-0" role="alert" aria-live="assertive" aria-atomic="true"></div>');
+            const toastBody = $('<div class="d-flex"><div class="toast-body">' + message + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>');
+            toast.append(toastBody);
+            
+            // Add to container
+            $('#toast-container').append(toast);
+            
+            // Initialize and show toast
+            const bsToast = new bootstrap.Toast(toast[0], { delay: 3000 });
+            bsToast.show();
+            
+            // Remove toast after it's hidden
+            toast.on('hidden.bs.toast', function() {
+                $(this).remove();
+            });
+        }
+    }
+</script>
 @endsection
