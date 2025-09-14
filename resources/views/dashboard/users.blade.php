@@ -87,15 +87,15 @@
         margin-bottom: 1rem;
     }
     .breadcrumb-item a {
-        color: #00bcd4;
+        color: #0d6ffc;
         text-decoration: none;
     }
     .breadcrumb-item.active {
         color: #6c757d;
     }
     .add-user-btn {
-        background-color: #00bcd4;
-        border-color: #00bcd4;
+        background-color: #0d6ffc;
+        border-color: #0d6ffc;
         color: white;
         padding: 10px 20px;
         border-radius: 4px;
@@ -104,7 +104,7 @@
         transition: all 0.2s;
     }
     .add-user-btn:hover {
-        background-color: #00acc1;
+        background-color: #1163d6;
         color: white;
         text-decoration: none;
     }
