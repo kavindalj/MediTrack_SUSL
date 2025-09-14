@@ -122,16 +122,12 @@
                             $isExpired = $product->expire_date && $product->expire_date->isPast();
                             $isAvailable = $product->quantity > 0;
                         @endphp
-                        @if($isAvailable)
-                        <tr class="{{ $isExpired ? 'expired-row' : '' }}" data-expired="{{ $isExpired ? 'true' : 'false' }}">
+                        @continue($product->quantity <= 0)
+                        <tr class="{{ $isExpired ? 'expired-row' : '' }}" data-expired="{{ $isExpired ? 'true' : 'false' }}" data-qty="{{ (int) $product->quantity }}" data-expiry="{{ $product->expire_date ? $product->expire_date->toDateString() : '' }}">
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category }}</td>
                             <td>
-                                @if($product->quantity > 0)
-                                    <span class="badge bg-success">{{ $product->quantity }}</span>
-                                @else
-                                    <span class="badge bg-danger">Out of Stock</span>
-                                @endif
+                                <span class="badge bg-success">{{ $product->quantity }}</span>
                             </td>
                             <td>
                                 @if($product->expire_date)
@@ -154,7 +150,6 @@
                                 </button>
                             </td>
                         </tr>
-                        @endif
                     @endforeach
                 </tbody>
             </table>
@@ -198,30 +193,63 @@
                         </div>
                     `;
                     
-                    $('.dataTables_length').append(expiredFilterHtml);
+                        $('.dataTables_length').append(expiredFilterHtml);
+
+                        // If the checkbox is pre-checked (browser back/restore), apply filter now
+                        var $expiredCb = $('#expiredFilter');
+                        if ($expiredCb.prop('checked')) {
+                            $expiredCb.trigger('change');
+                        }
                 }
             });
 
-            // Expired medicines filter functionality
-            $(document).on('change', '#expiredFilter', function() {
-                var isChecked = this.checked;
-                
-                if (isChecked) {
-                    // Show only expired medicines
-                    $.fn.dataTable.ext.search.push(
-                        function(settings, data, dataIndex) {
-                            var row = table.row(dataIndex).node();
-                            return $(row).data('expired') === 'true';
+                // Keep reference to our custom filter so we can remove it reliably
+                var expiredFilterFn = null;
+
+                // Expired medicines filter functionality
+                $(document).on('change', '#expiredFilter', function() {
+                    var isChecked = this.checked;
+
+                    // If we previously added our filter, remove it first
+                    if (expiredFilterFn) {
+                        var idx = $.fn.dataTable.ext.search.indexOf(expiredFilterFn);
+                        if (idx !== -1) {
+                            $.fn.dataTable.ext.search.splice(idx, 1);
                         }
-                    );
-                } else {
-                    // Show all medicines - remove the custom filter
-                    $.fn.dataTable.ext.search.pop();
-                }
-                
-                // Redraw the table to apply filter
-                table.draw();
-            });
+                        expiredFilterFn = null;
+                    }
+
+                    if (isChecked) {
+                        // Show only expired medicines (that have stock > 0)
+                        expiredFilterFn = function(settings, data, dataIndex) {
+                            var row = table.row(dataIndex).node();
+                            var $row = $(row);
+                            // Boolean flag precomputed on server
+                            var flagExpired = ($row.data('expired') === true) || ($row.attr('data-expired') === 'true');
+
+                            // Fallback: compute by date if available
+                            var expiryStr = $row.attr('data-expiry') || '';
+                            var expiredByDate = false;
+                            if (expiryStr) {
+                                var expiry = new Date(expiryStr + 'T00:00:00');
+                                var today = new Date();
+                                // Compare using local date (set time to midnight)
+                                today.setHours(0,0,0,0);
+                                if (!isNaN(expiry)) {
+                                    expiredByDate = expiry.getTime() <= today.getTime();
+                                }
+                            }
+
+                            var isExpired = flagExpired || expiredByDate;
+                            var qty = parseFloat($row.data('qty')) || 0;
+                            return isExpired && qty > 0;
+                        };
+                        $.fn.dataTable.ext.search.push(expiredFilterFn);
+                    }
+
+                    // Redraw the table to apply filter
+                    table.draw();
+                });
         });
 
         function deleteProduct(productId) {
