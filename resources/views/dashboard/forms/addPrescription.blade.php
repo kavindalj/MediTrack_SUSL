@@ -699,20 +699,54 @@ document.addEventListener('DOMContentLoaded', function() {
                     generatePDF(data.prescription).then(() => {
                         console.log('PDF generation completed');
                         
-                        // Show success message with prescription number
-                        alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}`);
-                        
-                        // Reset form or redirect
-                        saveButton.innerHTML = originalText;
-                        saveButton.disabled = false;
-                        
-                        // Redirect to prescriptions list with success message
-                        window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                        // Show success message with prescription number using SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Prescription Created Successfully!',
+                            text: `Prescription Number: ${data.prescription.prescription_number}`,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#28a745',
+                            timer: 4000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            // Reset form or redirect
+                            saveButton.innerHTML = originalText;
+                            saveButton.disabled = false;
+                            
+                            // Redirect to prescriptions list with success message
+                            window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                        });
                     }).catch((error) => {
                         console.error('PDF generation failed:', error);
-                        // Show success message even if PDF fails
-                        alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}. However, there was an issue generating the PDF.`);
-                        
+                        // Show success message even if PDF fails using SweetAlert2
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Prescription Created Successfully!',
+                            text: `Prescription Number: ${data.prescription.prescription_number}. However, there was an issue generating the PDF.`,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#ffc107',
+                            timer: 5000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            // Reset form or redirect
+                            saveButton.innerHTML = originalText;
+                            saveButton.disabled = false;
+                            
+                            // Redirect to prescriptions list with success message
+                            window.location.href = '{{ route("dashboard.prescription") }}?success=1';
+                        });
+                    });
+                } else {
+                    // Show success message with prescription number using SweetAlert2
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Prescription Created Successfully!',
+                        text: `Prescription Number: ${data.prescription.prescription_number}`,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745',
+                        timer: 4000,
+                        timerProgressBar: true
+                    }).then(() => {
                         // Reset form or redirect
                         saveButton.innerHTML = originalText;
                         saveButton.disabled = false;
@@ -720,20 +754,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Redirect to prescriptions list with success message
                         window.location.href = '{{ route("dashboard.prescription") }}?success=1';
                     });
-                } else {
-                    // Show success message with prescription number
-                    alert(`Prescription created successfully! Prescription Number: ${data.prescription.prescription_number}`);
-                    
-                    // Reset form or redirect
-                    saveButton.innerHTML = originalText;
-                    saveButton.disabled = false;
-                    
-                    // Redirect to prescriptions list with success message
-                    window.location.href = '{{ route("dashboard.prescription") }}?success=1';
                 }
             } else {
-                // Show error message
-                alert('Error: ' + data.message);
+                // Show error message using SweetAlert2
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Creating Prescription',
+                    text: data.message || 'An unexpected error occurred',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc3545'
+                });
                 
                 // Reset button
                 saveButton.innerHTML = originalText;
@@ -742,7 +772,15 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while creating the prescription. Please try again.');
+            
+            // Show error message using SweetAlert2
+            Swal.fire({
+                icon: 'error',
+                title: 'Network Error',
+                text: 'An error occurred while creating the prescription. Please check your connection and try again.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
             
             // Reset button
             saveButton.innerHTML = originalText;
