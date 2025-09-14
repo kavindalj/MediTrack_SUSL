@@ -222,8 +222,149 @@
 @section('scripts')
 <script>
     function editUser(userId) {
-        Swal.fire('Edit', `Edit user functionality will be implemented for user ID: ${userId}`, 'info');
-        // Later: window.location.href = `/dashboard/users/${userId}/edit`;
+        // Show loading dialog
+        Swal.fire({
+            title: 'Loading user details...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+        
+        // Fetch the user details
+        fetch(`/dashboard/users/${userId}`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user details');
+            }
+            return response.json();
+        })
+        .then(userData => {
+            // Pre-fill the form with user data
+            Swal.fire({
+                title: `Edit User: ${userData.name}`,
+                html: `
+                    <form id="edit-user-form" class="text-left">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" value="${userData.name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="${userData.email}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" required>
+                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="user" ${userData.role === 'user' ? 'selected' : ''}>User</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password (leave blank to keep unchanged)</label>
+                            <input type="password" class="form-control" id="password">
+                        </div>
+                    </form>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Save Changes',
+                cancelButtonText: 'Cancel',
+                focusConfirm: false,
+                preConfirm: () => {
+                    // Get values from form
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const role = document.getElementById('role').value;
+                    const password = document.getElementById('password').value;
+                    
+                    // Validate
+                    if (!name || !email) {
+                        Swal.showValidationMessage('Please fill in all required fields');
+                        return false;
+                    }
+                    
+                    if (!email.includes('@')) {
+                        Swal.showValidationMessage('Please enter a valid email address');
+                        return false;
+                    }
+                    
+                    // Return the form data
+                    return {
+                        name: name,
+                        email: email,
+                        role: role,
+                        password: password || undefined
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show saving dialog
+                    Swal.fire({
+                        title: 'Saving changes...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                    
+                    // Send PUT/PATCH request to update user
+                    fetch(`/dashboard/users/${userId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to update user');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update the table row with new data
+                        const row = document.getElementById(`user-row-${userId}`);
+                        if (row) {
+                            // Assuming the table structure: Name, Email, Role, Created, Actions
+                            row.querySelector('td:nth-child(1)').textContent = result.value.name;
+                            row.querySelector('td:nth-child(2)').textContent = result.value.email;
+                            row.querySelector('td:nth-child(3)').textContent = result.value.role;
+                        }
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'User updated successfully',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to update user: ' + error.message,
+                        });
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to load user details: ' + error.message,
+            });
+        });
     }
 
     function deleteUser(url, userName, userId) {
