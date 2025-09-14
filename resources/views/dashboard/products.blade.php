@@ -18,19 +18,19 @@
 @endsection
 
 @section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Products</li>
+                </ol>
+            </nav>
+
     <div class="table-container">
-
-        <!-- Page header (breadcrumb + Add button) -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <!-- Optional title/breadcrumbs -->
-                <!-- 
-                    <h5 class="mb-1">Products</h5>
-                    <small class="text-muted">Dashboard / Products</small> 
-                -->
-            </div>
-
-            <!-- Add product button -->
+        <div class="d-flex justify-content-end align-items-center mb-3">
             <a href="{{ route('dashboard.products.add') }}" class="btn btn-primary">
                 Add Product
             </a>
