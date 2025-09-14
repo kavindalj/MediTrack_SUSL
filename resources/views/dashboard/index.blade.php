@@ -122,7 +122,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class="card-title mb-2">Total Drugs</div>
-                            <div class="card-value">Rs {{ number_format($stats['total_drugs'], 2) }}</div>
+                            <div class="card-value">{{$stats['total_drugs'] }}</div>
                         </div>
                         <div class="card-icon">
                             <i class="fas fa-pills"></i>
@@ -189,7 +189,7 @@
         <div class="col-12">
             <div class="table-container">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Today Sales</h5>
+                    <h5 class="mb-0">Today Prescription</h5>
                     <div class="d-flex align-items-center">
                         <label class="me-2">Show</label>
                         <select class="form-select form-select-sm me-2" style="width: auto;">
@@ -208,23 +208,25 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Medicine <i class="fas fa-sort text-muted"></i></th>
-                                <th>Quantity <i class="fas fa-sort text-muted"></i></th>
-                                <th>Total Price <i class="fas fa-sort text-muted"></i></th>
-                                <th>Date <i class="fas fa-sort text-muted"></i></th>
+                                <th class="text-center">Student ID</th>
+                                <th>Medicine Names</th>
+                                <th>Total Items</th>
+                                <th>Total Quantity</th>
+                                <th class="text-center">Prescription Number</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($todaySales as $sale)
+                            @forelse($todaySales as $prescription)
                             <tr>
-                                <td>{{ $sale['medicine'] }}</td>
-                                <td>{{ $sale['quantity'] }}</td>
-                                <td>Rs {{ number_format($sale['total_price'], 2) }}</td>
-                                <td>{{ $sale['date'] }}</td>
+                                <td class="text-center">{{ $prescription['student_id'] }}</td>
+                                <td>{{ $prescription['medicine_names'] }}</td>
+                                <td class="text-center">{{ $prescription['total_items'] }}</td>
+                                <td class="text-center">{{ $prescription['total_quantity'] }}</td>
+                                <td class="text-center">{{ $prescription['prescription_number'] }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">No sales data available</td>
+                                <td colspan="6" class="text-center text-muted">No prescriptions found for today</td>
                             </tr>
                             @endforelse
                         </tbody>

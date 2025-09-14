@@ -22,45 +22,43 @@ class DashboardController extends Controller
     /**
      * Display the dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index()
     {
-        // Sample data - replace with actual database queries
         $stats = [
-            'total_drugs' => 0,
-            'product_categories' => 120,
-            'expired_products' => 0,
-            'system_users' => 9
+            'total_drugs' => Product::count(),
+            'product_categories' => Product::distinct('category')->count('category'),
+            'expired_products' => Product::where('expire_date', '<', now())->where('quantity', '>', 0)->count(),
+            'system_users' => User::count()
         ];
 
-        // Sample sales data - replace with actual database queries
-        $todaySales = [
-            [
-                'medicine' => 'amet',
-                'quantity' => 10,
-                'total_price' => 100.00,
-                'date' => '21 Feb, 2022'
-            ],
-            [
-                'medicine' => 'amet',
-                'quantity' => 10,
-                'total_price' => 100.00,
-                'date' => '21 Feb, 2022'
-            ],
-            [
-                'medicine' => 'rem',
-                'quantity' => 10,
-                'total_price' => 1400.00,
-                'date' => '21 Feb, 2022'
-            ],
-            [
-                'medicine' => 'repudiandae',
-                'quantity' => 50,
-                'total_price' => 9750.00,
-                'date' => '21 Feb, 2022'
-            ]
-        ];
+        // Fetch today's prescriptions data
+        $todaySales = Prescription::with('prescriptionItems.product')
+            ->whereDate('created_at', today())
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($prescription) {
+                // Get medicine names from prescription items
+                $medicineNames = $prescription->prescriptionItems->map(function($item) {
+                    return $item->product->name ?? $item->medicine_name ?? 'Unknown Medicine';
+                })->unique()->values()->toArray();
+                
+                // Create a formatted medicine names string
+                $medicineNamesString = implode(', ', array_slice($medicineNames, 0, 3));
+                if (count($medicineNames) > 3) {
+                    $medicineNamesString .= ' and ' . (count($medicineNames) - 3) . ' more';
+                }
+                
+                return [
+                    'student_id' => $prescription->student_id,
+                    'medicine_names' => $medicineNamesString,
+                    'total_items' => $prescription->total_items,
+                    'total_quantity' => $prescription->total_quantity,
+                    'prescription_number' => $prescription->prescription_number,
+                    'created_at' => $prescription->created_at->format('d M, Y')
+                ];
+            });
 
         return view('dashboard.index', compact('stats', 'todaySales'));
     }
@@ -80,7 +78,7 @@ class DashboardController extends Controller
         $search = request('search');
         
         // Fetch real prescription data from database
-        $prescriptionsQuery = \App\Models\Prescription::with('prescriptionItems.product')
+        $prescriptionsQuery = Prescription::with('prescriptionItems.product')
             ->orderBy('created_at', 'desc');
         
         // Apply search filter if provided
