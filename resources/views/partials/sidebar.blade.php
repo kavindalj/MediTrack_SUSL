@@ -20,10 +20,12 @@
                 <i class="fas fa-shopping-cart"></i>
                 Prescription
             </a>
+            @if(auth()->user()->role === 'pharmacist')
             <a class="nav-link {{ request()->routeIs('dashboard.users*') ? 'active' : '' }}" href="{{ route('dashboard.users') }}">
                 <i class="fas fa-users"></i>
                 Users
             </a>
+            @endif
             <a class="nav-link {{ request()->routeIs('dashboard.profile*') ? 'active' : '' }}" href="{{ route('dashboard.profile') }}">
                 <i class="fas fa-user"></i>
                 Profile
