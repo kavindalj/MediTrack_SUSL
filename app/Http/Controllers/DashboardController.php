@@ -51,6 +51,7 @@ class DashboardController extends Controller
                 }
                 
                 return [
+                    'id' => $prescription->id,
                     'student_id' => $prescription->student_id,
                     'medicine_names' => $medicineNamesString,
                     'total_items' => $prescription->total_items,
