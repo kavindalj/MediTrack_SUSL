@@ -1,53 +1,63 @@
----
+# 🚀 MediTrack SUSL
 
-# 🚀 Laravel Docker Development Setup
+This repository provides a **Laravel 8 development environment** using Docker, designed for **local development only**. No Docker image building or production deployment is included here. For production, see [Production Setup](#productionserver-deployment-without-docker).
 
-This repository provides a development environment for a Laravel 8 application using Docker. It's designed for **local development only** — no Docker image building or production deployment is involved.
+***
 
----
+## 📑 Table of Contents
 
-## 🧰 Tech Stack
+- [🧰 Tech Stack](#tech-stack)  
+- [📦 Prerequisites](#prerequisites)  
+- [⚙️ Development Setup (Docker)](#development-setup-docker)  
+  - [1. Clone Repository](#1-clone-repository)  
+  - [2. Configure Environment](#2-configure-environment)  
+  - [3. Start Docker Containers](#3-start-docker-containers)  
+  - [4. Install Dependencies](#4-install-dependencies)  
+  - [5. Generate Application Key](#5-generate-application-key)  
+  - [6. Run Database Migrations](#6-run-database-migrations)  
+  - [7. Seed Database](#7-seed-database)  
+  - [8. Access the Application](#8-access-the-application)  
+- [🧾 Running Artisan & Composer Commands](#running-artisan--composer-commands)  
+- [🚀 Production/Server Deployment (Without Docker)](#productionserver-deployment-without-docker)  
+- [✅ Tips](#tips)  
+- [🧼 Troubleshooting](#troubleshooting)  
 
-- **Laravel 8** – PHP web framework
-- **PHP 7.4 + Apache** – Web server
-- **MySQL 5.7** – Database server
-- **phpMyAdmin** – Database management GUI
-- **Composer** – PHP dependency manager (installed inside the container)
+***
 
----
+## Tech Stack
 
-## 📦 Prerequisites
+- **Laravel 8** – PHP web framework  
+- **PHP 7.4 + Apache** – Web server  
+- **MySQL 5.7** – Database server  
+- **phpMyAdmin** – Database management GUI  
+- **Composer** – PHP dependency manager  
 
-Make sure you have the following tools installed on your machine:
+***
 
-- [Docker](https://docs.docker.com/get-docker/)
+## Prerequisites
 
----
+- [Docker](https://docs.docker.com/get-docker/) installed on your machine  
 
-## ⚙️ Setup Instructions
+***
 
-### 1. 📥 Clone the repository
+## Development Setup (Docker)
 
-Clone the project to your local development environment:
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/kavindalj/MediTrack_SUSL.git
 cd MediTrack_SUSL
-````
+```
 
----
-
-### 2. 📝 Copy and Configure Environment File
-
-Copy the example environment configuration file:
+### 2. Configure Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Ensure the database settings match the `docker-compose.yml`:
+Update `.env` file for Docker services:
 
-```env
+```
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
@@ -56,128 +66,151 @@ DB_USERNAME=laravel
 DB_PASSWORD=secret
 ```
 
-These values correspond to the service defined in the Docker setup (`db` is the MySQL container name).
-
----
-
-### 3. 🐳 Start Docker Containers
-
-Use `docker-compose` to start the application stack:
+### 3. Start Docker Containers
 
 ```bash
 docker compose up -d
 ```
 
-This will start the following services:
+This will start:
 
-* Laravel application (PHP + Apache)
-* MySQL 5.7 database
-* phpMyAdmin
+- Laravel App (PHP + Apache)  
+- MySQL 5.7  
+- phpMyAdmin  
 
-Wait a few seconds for the MySQL server to initialize before proceeding to the next step.
-
----
-
-### 4. 🧰 Install Composer Dependencies
+### 4. Install Dependencies
 
 Enter the Laravel container:
 
 ```bash
-docker exec -it laravel_app bash
+docker compose exec laravel_app bash
 ```
 
-Inside the container, install required utilities and Composer:
+Inside the container, install Composer if not already installed:
 
 ```bash
 apt update && apt install -y curl unzip git zip
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
+```
+
+Then install Laravel dependencies:
+
+```bash
 composer install
 ```
 
----
-
-### 5. 🔐 Generate Application Key
-
-Still inside the container, run the following to generate the Laravel app key:
+### 5. Generate Application Key
 
 ```bash
 php artisan key:generate
 ```
 
----
-
-### 6. 🗃️ Run Database Migrations
-
-Run the database migrations to create required tables:
+### 6. Run Database Migrations
 
 ```bash
 php artisan migrate
 ```
 
-Then exit the container:
+### 7. Seed Database
 
 ```bash
+php artisan db:seed
 exit
 ```
 
----
+### 8. Access the Application
 
-## 🌐 Access the Application
+- Laravel App → http://localhost:8000  
+- phpMyAdmin → http://localhost:8080  
 
-After setup, you can access the services through your browser:
+**Login Credentials**
 
-* **Laravel App**: [http://localhost:8000](http://localhost:8000)
-* **phpMyAdmin**: [http://localhost:8080](http://localhost:8080)
+- **MediTrack App**  
+  Email: [pharmacist@meditrack.com](mailto:pharmacist@meditrack.com)  
+  Password: password123  
+  Role: Pharmacist (Full Access)  
 
-> Login credentials for phpMyAdmin:
->
-> * **Username**: `laravel`
-> * **Password**: `secret`
+- **phpMyAdmin**  
+  Username: laravel  
+  Password: secret  
 
----
+***
 
-## 🧾 Running Artisan and Composer Commands
+## Running Artisan & Composer Commands
 
-To run Laravel Artisan or Composer commands, first enter the Laravel container:
+Enter the Laravel container:
 
 ```bash
-docker exec -it laravel_app bash
+docker compose exec laravel_app bash
 ```
 
-Then you can use commands such as:
+Run commands as needed:
 
 ```bash
-# Composer Commands
+# Composer
 composer install
 composer update
-composer require <package-name>
+composer require <package>
 
-# Artisan Commands
+# Artisan
 php artisan migrate
 php artisan db:seed
+php artisan migrate:fresh --seed
 php artisan route:list
 php artisan make:model <ModelName>
 php artisan make:controller <ControllerName>
 php artisan make:migration create_table_name
 ```
 
----
+***
 
-## ✅ Tips
+## Production/Server Deployment (Without Docker)
 
-* To stop all Docker containers, run:
+For production, install PHP, Apache/Nginx, MySQL, and Composer directly on the server.
 
-  ```bash
-  docker compose stop
-  ```
+### Prerequisites
 
----
+- PHP 7.4+ (with mbstring, openssl, pdo, tokenizer, xml, json)  
+- Apache or Nginx  
+- MySQL 5.7+ / MariaDB  
+- Composer  
 
-## 🧼 Troubleshooting
+### Deployment Steps
 
-* If migrations fail due to MySQL not being ready, wait a few more seconds and try again.
-* Make sure ports `8000` (for Laravel) and `8080` (for phpMyAdmin) are not being used by other apps.
+```bash
+# Clone project
+git clone https://github.com/kavindalj/MediTrack_SUSL.git
+cd MediTrack_SUSL
 
----
+# Install dependencies
+composer install --optimize-autoloader --no-dev
 
+# Setup environment
+cp .env.example .env
+nano .env  # configure database + app settings
+
+# Generate key
+php artisan key:generate
+
+# Setup database
+php artisan migrate --force
+php artisan db:seed --force
+```
+
+***
+
+## Tips
+
+- To stop containers:
+
+```bash
+docker compose stop
+```
+
+***
+
+## Troubleshooting
+
+- If migrations fail, wait a few seconds for MySQL to initialize and retry.  
+- If ports are blocked, ensure ports 8000 and 8080 are free.
