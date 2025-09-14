@@ -28,7 +28,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
     Route::get('/dashboard/prescription', [DashboardController::class, 'prescription'])->name('dashboard.prescription');
-    Route::get('/dashboard/users', [DashboardController::class, 'users'])->name('dashboard.users');
     Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
 
     // Product routes
@@ -36,13 +35,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/products/store', [ProductController::class, 'storeProduct'])->name('dashboard.products.store');
     Route::delete('/dashboard/products/{id}', [ProductController::class, 'deleteProduct'])->name('dashboard.products.delete');
 
-    // User routes
-    Route::get('/dashboard/users/add', [UserController::class, 'addUser'])->name('dashboard.users.add');
-    Route::post('/dashboard/users/add', [UserController::class, 'addUserPost'])->name('dashboard.users.add.post');
-    Route::post('/dashboard/users/verify-password', [UserController::class, 'verifyPassword'])->name('dashboard.users.verify-password');
-    Route::get('/dashboard/users/{id}', [UserController::class, 'getUser'])->name('dashboard.users.get');
-    Route::patch('/dashboard/users/{id}', [UserController::class, 'updateUser'])->name('dashboard.users.update');
-    Route::delete('/dashboard/users/{id}', [UserController::class, 'deleteUsers'])->name('dashboard.users.delete');
+    // User routes - Only accessible by pharmacists
+    Route::middleware(['pharmacist'])->group(function () {
+        Route::get('/dashboard/users', [DashboardController::class, 'users'])->name('dashboard.users');
+        Route::get('/dashboard/users/add', [UserController::class, 'addUser'])->name('dashboard.users.add');
+        Route::post('/dashboard/users/add', [UserController::class, 'addUserPost'])->name('dashboard.users.add.post');
+        Route::post('/dashboard/users/verify-password', [UserController::class, 'verifyPassword'])->name('dashboard.users.verify-password');
+        Route::get('/dashboard/users/{id}', [UserController::class, 'getUser'])->name('dashboard.users.get');
+        Route::patch('/dashboard/users/{id}', [UserController::class, 'updateUser'])->name('dashboard.users.update');
+        Route::delete('/dashboard/users/{id}', [UserController::class, 'deleteUsers'])->name('dashboard.users.delete');
+    });
 
     // Profile routes
     Route::post('/dashboard/profile/update-password', [ProfileController::class, 'updatePassword'])->name('dashboard.profile.update-password');
