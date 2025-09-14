@@ -24,6 +24,22 @@
         color: white;
         border: none;
     }
+
+    .add-prescription-btn {
+        background-color: #0d6ffc;
+        border-color: #0d6ffc;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .add-prescription-btn:hover {
+        background-color: #1163d6;
+        color: white;
+        text-decoration: none;
+    }
     
     .btn-action {
         width: 30px;
@@ -128,6 +144,8 @@
     .pagination .page-item.active .page-link {
         box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
     }
+
+    
     
     /* Responsive pagination */
     @media (max-width: 576px) {
@@ -179,14 +197,16 @@
                         </ol>
                     </nav>
                 </div>
-                <div>
-                    <a href="#" class="btn btn-primary" id="addPrescriptionBtn">
-                        <i class="fas fa-plus me-2"></i> New Prescription
-                    </a>
-                </div>
+                
             </div>
             
             <div class="table-container">
+
+            <div class="d-flex justify-content-end mb-3">
+<a href="#" class="btn add-prescription-btn" id="addPrescriptionBtn">
+                        <i class="fas fa-plus me-2"></i> New Prescription</a>
+                </div>
+
                 <!-- Hidden inputs to store pagination info for JavaScript -->
                 <input type="hidden" id="current-page" value="{{ $prescriptions->currentPage() ?? 1 }}">
                 <input type="hidden" id="per-page" value="{{ $prescriptions->perPage() ?? 10 }}">

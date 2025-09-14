@@ -61,6 +61,22 @@
     box-shadow: 0 0 0 0.2rem rgba(43, 126, 193, 0.25);
 }
 
+.add-user-btn {
+        background-color: #0d6ffc;
+        border-color: #0d6ffc;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .add-user-btn:hover {
+        background-color: #1163d6;
+        color: white;
+        text-decoration: none;
+    }
+
 .btn-primary {
     background-color: var(--primary);
     border-color: var(--primary);
@@ -232,7 +248,7 @@
 
                     <!-- Submit Button -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-primary" id="validateAndOpenModal">
+                        <button type="button" class="btn add-user-btn" id="validateAndOpenModal">
                             Add User
                         </button>
                     </div>
