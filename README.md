@@ -6,7 +6,7 @@ This repository provides a **Laravel 8 development environment** using Docker, d
 
 ## 📑 Table of Contents
 
-- [🏥 Project Overview](#-project-overview)  
+- [🏥 Project Overview](#project-overview)  
 - [🧰 Tech Stack](#tech-stack)  
 - [📦 Prerequisites](#prerequisites)  
 - [⚙️ Development Setup (Docker)](#development-setup-docker)  
