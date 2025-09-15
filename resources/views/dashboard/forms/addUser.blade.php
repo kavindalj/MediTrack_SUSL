@@ -277,8 +277,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmAddUser">Confirm & Add User</button>
+                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmAddUser">Confirm & Add User</button>
             </div>
         </div>
     </div>
