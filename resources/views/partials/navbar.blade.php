@@ -10,12 +10,6 @@
             </div>
             <div class="col-md-6">
                 <div class="d-flex align-items-center justify-content-end">
-                    <!-- Search -->
-                    <div class="me-3">
-                        <form class="d-flex">
-                            <input class="form-control form-control-sm" type="search" placeholder="Search..." aria-label="Search">
-                        </form>
-                    </div>
                     
                     <!-- User Dropdown -->
                     <div class="dropdown">
