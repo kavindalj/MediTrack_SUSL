@@ -50,6 +50,26 @@ class Product extends Model
     }
 
     /**
+     * Check if product is expired
+     */
+    public function isExpired()
+    {
+        if (!$this->expire_date) {
+            return false; // No expiry date means it doesn't expire
+        }
+        
+        return $this->expire_date <= now();
+    }
+
+    /**
+     * Check if product is available (not expired and has stock)
+     */
+    public function isAvailable()
+    {
+        return $this->quantity > 0 && !$this->isExpired();
+    }
+
+    /**
      * Get products that are running low on stock
      */
     public static function lowStock($threshold = 10)

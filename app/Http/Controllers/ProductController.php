@@ -16,6 +16,10 @@ class ProductController extends Controller
             // Fetch products from database
             $products = Product::select('id', 'name', 'quantity as stock', 'category', 'expire_date')
                 ->where('quantity', '>', 0) // Only get products with stock
+                ->where(function($query) {
+                    $query->whereNull('expire_date') // Products without expiry date
+                          ->orWhere('expire_date', '>', now()); // Or products that haven't expired
+                })
                 ->orderBy('name')
                 ->get()
                 ->map(function ($product) {
@@ -53,6 +57,10 @@ class ProductController extends Controller
             $products = Product::select('id', 'name', 'quantity as stock', 'category')
                 ->where('name', 'LIKE', '%' . $query . '%')
                 ->where('quantity', '>', 0)
+                ->where(function($query) {
+                    $query->whereNull('expire_date') // Products without expiry date
+                          ->orWhere('expire_date', '>', now()); // Or products that haven't expired
+                })
                 ->orderBy('name')
                 ->limit(10)
                 ->get()
@@ -91,6 +99,10 @@ class ProductController extends Controller
             $products = Product::select('id', 'name', 'quantity as stock', 'category')
                 ->where('category', $category)
                 ->where('quantity', '>', 0)
+                ->where(function($query) {
+                    $query->whereNull('expire_date') // Products without expiry date
+                          ->orWhere('expire_date', '>', now()); // Or products that haven't expired
+                })
                 ->orderBy('name')
                 ->get();
 
