@@ -15,7 +15,7 @@ class ProductController extends Controller
         try {
             // Fetch products from database
             $products = Product::select('id', 'name', 'quantity as stock', 'category', 'expire_date')
-                ->where('quantity', '>', 0) // Only get products with stock
+                ->where('quantity', '>=', 0) // Only get products with stock
                 ->orderBy('name')
                 ->get()
                 ->map(function ($product) {
@@ -52,7 +52,7 @@ class ProductController extends Controller
         try {
             $products = Product::select('id', 'name', 'quantity as stock', 'category')
                 ->where('name', 'LIKE', '%' . $query . '%')
-                ->where('quantity', '>', 0)
+                ->where('quantity', '>=', 0)
                 ->orderBy('name')
                 ->limit(10)
                 ->get()
@@ -90,7 +90,7 @@ class ProductController extends Controller
         try {
             $products = Product::select('id', 'name', 'quantity as stock', 'category')
                 ->where('category', $category)
-                ->where('quantity', '>', 0)
+                ->where('quantity', '>=', 0)
                 ->orderBy('name')
                 ->get();
 
