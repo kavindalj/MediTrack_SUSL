@@ -103,6 +103,21 @@
         .outofstock-row:hover {
             background-color: #ffe0b2 !important;
         }
+        .add-product-btn {
+            background-color: #0d6ffc;
+            border-color: #0d6ffc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .add-product-btn:hover {
+            background-color: #1163d6;
+            color: white;
+            text-decoration: none;
+        }
 
 
     </style>
@@ -123,7 +138,7 @@
 
     <div class="table-container">
         <div class="d-flex justify-content-end align-items-center mb-3">
-            <a href="{{ route('dashboard.products.add') }}" class="btn btn-primary">
+            <a href="{{ route('dashboard.products.add') }}" class="btn add-product-btn">
                 <i class="fas fa-plus me-2"></i>Add Product
             </a>
         </div>
