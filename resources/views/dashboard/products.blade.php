@@ -32,9 +32,9 @@
         .dataTables_filter {
             float: left !important;
             text-align: left !important;
-            margin-left: 325px; 
+            margin-left: 321px; 
             margin-bottom: 10px;
-            padding: 5px; 
+            padding: 5px;
         }
 
         /* Length menu container: show entries dropdown */
@@ -116,7 +116,7 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a class="text-decoration-none" href="{{ route('dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Products</li>
                 </ol>
             </nav>
