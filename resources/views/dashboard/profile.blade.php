@@ -209,9 +209,9 @@
 
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb bg-transparent p-0 mb-0">
+        <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}" class="text-decoration-none" style="color: #007bff;">Dashboard</a>
+                <a href="{{ route('dashboard') }}">Dashboard</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Profile</li>
         </ol>
@@ -368,7 +368,7 @@
                         
                         <div class="row">
                             <div class="col-sm-9 offset-sm-3">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-standard-primary">
                                     Update Password
                                 </button>
                             </div>
@@ -422,8 +422,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
-                <button type="button" class="btn btn-primary" id="savePersonalDetailsBtn">Save Changes</button>
+                <button type="button" class="btn btn-standard-secondary" id="cancelModalBtn">Cancel</button>
+                <button type="button" class="btn btn-standard-primary" id="savePersonalDetailsBtn">Save Changes</button>
             </div>
         </div>
     </div>

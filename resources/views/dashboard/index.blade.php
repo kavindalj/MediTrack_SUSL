@@ -5,11 +5,9 @@
 
 @section('styles')
 <style>
-
-
 .dashboard-card {
     border: none;
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     overflow: hidden;
@@ -29,7 +27,7 @@
 .dashboard-card .card-icon {
     width: 50px;
     height: 50px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,16 +41,16 @@
 
 .dashboard-card .card-title {
     font-size: 0.85rem;
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .dashboard-card .card-value {
     font-size: 1.8rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: #2c3e50;
     margin-bottom: 0;
     line-height: 1.2;
@@ -60,90 +58,39 @@
 
 /* Card variations with better colors */
 .dashboard-card.card-cyan {
-    border-left: 4px solid #17a2b8;
+    border-left: 4px solid var(--card-cyan);
     background: linear-gradient(135deg, #ffffff 0%, #f8fdff 100%);
 }
 
 .dashboard-card.card-cyan .card-icon {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    background: linear-gradient(135deg, var(--card-cyan) 0%, #138496 100%);
 }
 
 .dashboard-card.card-green {
-    border-left: 4px solid #28a745;
+    border-left: 4px solid var(--card-green);
     background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
 }
 
 .dashboard-card.card-green .card-icon {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: linear-gradient(135deg, var(--card-green) 0%, var(--action-green-hover) 100%);
 }
 
 .dashboard-card.card-red {
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid var(--card-red);
     background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
 }
 
 .dashboard-card.card-red .card-icon {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    background: linear-gradient(135deg, var(--card-red) 0%, var(--action-red-hover) 100%);
 }
 
 .dashboard-card.card-yellow {
-    border-left: 4px solid #ffc107;
+    border-left: 4px solid var(--card-yellow);
     background: linear-gradient(135deg, #ffffff 0%, #fffdf5 100%);
 }
 
 .dashboard-card.card-yellow .card-icon {
-    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-}
-
-/* Action button styles */
-.action-buttons .btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-}
-
-.btn-view {
-    background-color: #00bcd4;
-    color: white;
-    border: none;
-}
-
-.btn-action {
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    border-radius: 4px;
-    border: none;
-    margin: 0 3px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-edit {
-    background-color: #00bcd4;
-    color: white;
-}
-
-.btn-edit:hover {
-    background-color: #00acc1;
-    color: white;
-}
-
-.btn-view:hover {
-    background-color: #00acc1;
-    color: white;
-}
-
-.btn-delete {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-delete:hover {
-    background-color: #c82333;
-    color: white;
+    background: linear-gradient(135deg, var(--card-yellow) 0%, #e0a800 100%);
 }
 
 /* Responsive adjustments */
@@ -175,7 +122,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class="card-title mb-2">Total Drugs</div>
-                            <div class="card-value">{{$stats['total_drugs'] }}</div>
+                            <div class="card-value">{{ $stats['total_drugs'] ?? 0 }}</div>
                         </div>
                         <div class="card-icon">
                             <i class="fas fa-pills"></i>
@@ -192,7 +139,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class="card-title mb-2">Categories</div>
-                            <div class="card-value">{{ $stats['product_categories'] }}</div>
+                            <div class="card-value">{{ $stats['product_categories'] ?? 0 }}</div>
                         </div>
                         <div class="card-icon">
                             <i class="fas fa-tags"></i>
@@ -209,7 +156,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class="card-title mb-2">Expired</div>
-                            <div class="card-value">{{ $stats['expired_products'] }}</div>
+                            <div class="card-value">{{ $stats['expired_products'] ?? 0 }}</div>
                         </div>
                         <div class="card-icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -226,7 +173,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class="card-title mb-2">Users</div>
-                            <div class="card-value">{{ $stats['system_users'] }}</div>
+                            <div class="card-value">{{ $stats['system_users'] ?? 0 }}</div>
                         </div>
                         <div class="card-icon">
                             <i class="fas fa-users"></i>
@@ -262,24 +209,24 @@
                         <thead>
                             <tr>
                                 <th class="text-center">Student ID</th>
-                                <th>Medicine Names</th>
-                                <th>Total Items</th>
-                                <th>Total Quantity</th>
+                                <th width="180">Medicine Names</th>
+                                <th class="text-center">Total Items</th>
+                                <th class="text-center">Total Quantity</th>
                                 <th class="text-center">Prescription Number</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($todaySales as $prescription)
+                            @forelse($todaySales ?? [] as $prescription)
                             <tr>
-                                <td class="text-center">{{ $prescription['student_id'] }}</td>
-                                <td>{{ $prescription['medicine_names'] }}</td>
-                                <td class="text-center">{{ $prescription['total_items'] }}</td>
-                                <td class="text-center">{{ $prescription['total_quantity'] }}</td>
-                                <td class="text-center">{{ $prescription['prescription_number'] }}</td>
-                                <td>
+                                <td class="text-center">{{ $prescription['student_id'] ?? 'N/A' }}</td>
+                                <td>{{ $prescription['medicine_names'] ?? 'No medicines' }}</td>
+                                <td class="text-center">{{ $prescription['total_items'] ?? 0 }}</td>
+                                <td class="text-center">{{ $prescription['total_quantity'] ?? 0 }}</td>
+                                <td class="text-center">{{ $prescription['prescription_number'] ?? 'N/A' }}</td>
+                                <td class="text-center">
                                         <div class="action-buttons">
-                                            <button class="btn btn-action btn-view" data-id="{{ $prescription['id'] }}" onclick="showPrescriptionReceipt({{ $prescription['id'] }})">
+                                            <button class="btn btn-action-cyan" data-id="{{ $prescription['id'] ?? '' }}" onclick="showPrescriptionReceipt({{ $prescription['id'] ?? '0' }})">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
@@ -297,7 +244,7 @@
                 <!-- Pagination -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                        <small class="text-muted">Showing {{ count($todaySales) }} entries</small>
+                        <small class="text-muted">Showing {{ isset($todaySales) ? count($todaySales) : 0 }} entries</small>
                     </div>
                     <nav aria-label="Table pagination">
                         <ul class="pagination pagination-sm mb-0">
@@ -368,7 +315,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="printInvoice">
+                <button type="button" class="btn btn-standard-primary" id="printInvoice">
                     <i class="fas fa-print me-1"></i> Print Prescription
                 </button>
             </div>
@@ -403,9 +350,15 @@
         }
         
         // View Prescription Button Click
-        $(document).on('click', '.btn-view', function(e) {
+        $(document).on('click', '.btn-action-cyan', function(e) {
             e.preventDefault();
             const prescriptionId = $(this).data('id');
+            
+            // Validate prescription ID
+            if (!prescriptionId || prescriptionId === '0' || prescriptionId === '') {
+                alert('Invalid prescription ID');
+                return;
+            }
             
             // Add a spinner to indicate loading
             $('#saleModalLabel').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
@@ -417,32 +370,39 @@
                 headers: {
                     'X-CSRF-TOKEN': getCSRFToken()
                 },
+                timeout: 10000, // 10 second timeout
                 success: function(prescriptionData) {
                     $('#saleModalLabel').text('Prescription Receipt');
                     
-                    // Populate modal with prescription details
-                    $('#invoice-no').text(prescriptionData.prescription_number);
-                    $('#sale-date').text(prescriptionData.date);
+                    // Validate response data
+                    if (!prescriptionData || typeof prescriptionData !== 'object') {
+                        throw new Error('Invalid response data');
+                    }
                     
-                    $('#customer-name').text(prescriptionData.student_id);
+                    // Populate modal with prescription details
+                    $('#invoice-no').text(prescriptionData.prescription_number || 'N/A');
+                    $('#sale-date').text(prescriptionData.date || 'N/A');
+                    
+                    $('#customer-name').text(prescriptionData.student_id || 'N/A');
                     
                     // Clear and populate items table
                     $('#sale-items').empty();
-                    prescriptionData.items.forEach((item, index) => {
+                    const items = prescriptionData.items || [];
+                    items.forEach((item, index) => {
                         $('#sale-items').append(`
                             <tr>
                                 <td>${index + 1}</td>
-                                <td>${item.medicine}</td>
-                                <td>${item.quantity}</td>
+                                <td>${item.medicine || 'Unknown Medicine'}</td>
+                                <td>${item.quantity || 0}</td>
                             </tr>
                         `);
                     });
                     
                     // Set total items count
-                    $('#total').text(`${prescriptionData.total_quantity}`);
+                    $('#total').text(`${prescriptionData.total_quantity || 0}`);
                     
                     // Set notes
-                    if (prescriptionData.notes) {
+                    if (prescriptionData.notes && prescriptionData.notes.trim() !== '') {
                         $('#sale-notes').text(prescriptionData.notes);
                     } else {
                         $('#sale-notes').text('No additional notes');
@@ -454,9 +414,20 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    $('#saleModalLabel').text('Error');
+                    $('#saleModalLabel').text('Prescription Receipt');
                     console.error('Error fetching prescription details:', error);
-                    alert('Failed to load prescription details');
+                    
+                    let errorMessage = 'Failed to load prescription details';
+                    if (xhr.status === 404) {
+                        errorMessage = 'Prescription not found';
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'Server error occurred';
+                    } else if (status === 'timeout') {
+                        errorMessage = 'Request timed out. Please try again.';
+                    }
+                    
+                    alert(errorMessage);
+                    showToast(errorMessage, 'danger');
                 }
             });
         });

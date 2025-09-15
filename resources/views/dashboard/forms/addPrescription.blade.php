@@ -1,106 +1,306 @@
 @extends('layouts.app')
 
 @section('title', 'MediTrack Dashboard')
-@section('page-title', 'Create New Sale')
+@section('page-title', 'Create New Prescription')
 
 @section('styles')
 <style>
+
     .form-container {
-        background-color: #fff;
-        border-radius: 0.5rem;
+        background: var(--light);
+        border-radius: var(--border-radius-lg);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: var(--spacing-lg, 1.5rem);
+        margin-bottom: var(--spacing-xl, 2rem);
+        border: 1px solid var(--border-color);
     }
     
     .items-table {
-        border: 1px solid #e0e0e0;
-        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
         overflow: hidden;
+        background: white;
     }
     
+    .items-table .table {
+        margin-bottom: 0;
+    }
+    
+    .items-table .table th {
+        border-top: none;
+        font-weight: var(--font-weight-semibold);
+        color: #495057;
+        background-color: var(--light);
+        padding: 1rem 0.75rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    .items-table .table td {
+        padding: 0.75rem;
+        vertical-align: middle;
+        border-color: var(--border-color);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Product Row */
     .product-row {
         transition: all 0.2s ease;
     }
     
     .product-row:hover {
-        background-color: #f8f9fa;
+        background-color: var(--light);
     }
     
     .btn-remove {
-        background-color: #ffe7e7;
-        color: #dc3545;
+        background-color: var(--action-red);
+        color: white;
         border: none;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
+        width: var(--action-btn-size);
+        height: var(--action-btn-size);
+        padding: 0;
+        border-radius: var(--border-radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: var(--font-size-sm);
     }
     
-    .customer-info {
-        border-left: 3px solid #0d6efd;
+    .btn-remove:hover {
+        background-color: var(--action-red-hover);
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* Student Info Section */
+    .student-info {
+        border-left: 4px solid var(--primary);
         padding-left: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fdff 100%);
+        border-radius: var(--border-radius-md);
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
     
     .cart-summary {
-        background-color: #f8f9fa;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
+        background: white;
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg, 1.5rem);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        border: 1px solid var(--border-color);
     }
     
     .cart-summary-header {
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 2px solid var(--border-color);
         padding-bottom: 0.75rem;
         margin-bottom: 1rem;
+    }
+    
+    .cart-summary-header h5 {
+        color: var(--dark);
+        font-weight: var(--font-weight-semibold);
+        margin: 0;
     }
     
     .summary-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+    }
+    
+    .summary-row span:last-child {
+        font-weight: var(--font-weight-medium);
+        color: var(--dark);
     }
     
     .summary-total {
-        font-weight: bold;
-        border-top: 1px solid #dee2e6;
-        padding-top: 0.5rem;
-        margin-top: 0.5rem;
-        font-size: 1.1rem;
+        font-weight: var(--font-weight-bold);
+        border-top: 2px solid var(--border-color);
+        padding-top: 0.75rem;
+        margin-top: 0.75rem;
+        font-size: var(--font-size-lg);
+        color: var(--dark);
     }
     
+    /* Medicine Search Results */
     .medicine-search-results {
         position: absolute;
         background: white;
         width: 100%;
-        z-index: 100;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         max-height: 300px;
         overflow-y: auto;
-        border-radius: 0.25rem;
-        border: 1px solid #ced4da;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--border-color);
         display: none;
+        margin-top: 2px;
     }
     
     .medicine-search-item {
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1rem;
         cursor: pointer;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+        font-size: var(--font-size-sm);
     }
     
     .medicine-search-item:hover {
-        background-color: #f8f9fa;
+        background-color: var(--light);
+        border-left: 3px solid var(--primary);
+    }
+    
+    .medicine-search-item:last-child {
+        border-bottom: none;
+    }
+    
+    .medicine-search-item .medicine-name {
+        font-weight: var(--font-weight-medium);
+        color: var(--dark);
+        margin-bottom: 0.25rem;
     }
     
     .medicine-search-item .stock {
-        font-size: 0.8rem;
-        color: #6c757d;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
     }
     
-    .medicine-search-item .price {
-        font-weight: 600;
-        color: #198754;
+    .medicine-search-item .category {
+        font-size: 0.75rem;
+        color: var(--action-cyan);
+        font-weight: var(--font-weight-medium);
     }
     
+    /* Required Asterisk */
     .required-asterisk {
-        color: #dc3545;
+        color: var(--danger);
+        font-weight: var(--font-weight-bold);
+    }
+    
+    /* Form Controls - Enhanced styling */
+    .form-control, .form-select {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        font-size: var(--font-size-sm);
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem var(--focus-shadow);
+    }
+    
+    /* Form Labels */
+    .form-label {
+        font-weight: var(--font-weight-medium);
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Breadcrumb - Consistent styling */
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 1rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+        font-weight: var(--font-weight-medium);
+    }
+    
+    /* Input Group Styling */
+    .input-group .btn {
+        border-color: var(--border-color);
+    }
+    
+    .input-group .btn-outline-secondary {
+        color: var(--text-muted);
+        border-color: var(--border-color);
+    }
+    
+    .input-group .btn-outline-secondary:hover {
+        background-color: var(--light);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    /* Search Input Focus State */
+    #medicineSearch:focus + .medicine-search-results {
+        border-color: var(--primary);
+    }
+    
+    /* No Items Row Styling */
+    #noItemsRow td {
+        color: var(--text-muted);
+        font-style: italic;
+        padding: 2rem;
+        background-color: #f8f9fa;
+    }
+    
+    /* Quantity Input Styling */
+    .quantity-input {
+        width: 80px;
+        text-align: center;
+    }
+    
+    /* Form Switch Styling */
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem var(--focus-shadow);
+    }
+    
+    /* Sticky Summary Enhancement */
+    .cart-summary.sticky-top {
+        top: 2rem;
+    }
+    
+    /* Responsive Enhancements */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-summary {
+            padding: 1rem;
+            position: static !important;
+            margin-top: 2rem;
+        }
+        
+        .medicine-search-results {
+            position: fixed;
+            left: 1rem;
+            right: 1rem;
+            width: auto;
+        }
+        
+        .items-table .table th,
+        .items-table .table td {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
     }
 </style>
 @endsection
@@ -127,11 +327,11 @@
                     <div class="col-lg-8">
                         <div class="form-container mb-4">
                             <h5 class="mb-3">Student Information</h5>
-                            <div class="customer-info">
+                            <div class="student-info">
                                 <div class="row g-3">
                                     <div class="col-md-12">
                                         <label for="studentId" class="form-label">Student ID<span class="required-asterisk">*</span></label>
-                                        <input type="text" class="form-control" id="studentId" name="student_id" required>
+                                        <input type="text" class="form-control" id="studentId" name="student_id" required placeholder="Enter student ID">
                                     </div>
                                 </div>
                             </div>
@@ -145,7 +345,7 @@
                             <div class="position-relative mb-3">
                                 <label for="medicineSearch" class="form-label">Search Medicine</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="medicineSearch" placeholder="Type medicine name to search...">
+                                    <input type="text" class="form-control" id="medicineSearch" placeholder="Type medicine name to search..." autocomplete="off">
                                     <button class="btn btn-outline-secondary" type="button" id="searchMedicineBtn">
                                         <i class="fas fa-search"></i>
                                     </button>
@@ -157,7 +357,7 @@
                             
                             <div class="table-responsive items-table">
                                 <table class="table" id="itemsTable">
-                                    <thead class="table-light">
+                                    <thead>
                                         <tr>
                                             <th width="60%">Medicine</th>
                                             <th width="25%">Quantity</th>
@@ -166,7 +366,10 @@
                                     </thead>
                                     <tbody>
                                         <tr id="noItemsRow">
-                                            <td colspan="3" class="text-center text-muted py-4">No items added to this prescription</td>
+                                            <td colspan="3" class="text-center text-muted py-4">
+                                                <i class="fas fa-pills mb-2 d-block text-muted"></i>
+                                                No medicines added to this prescription
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -201,7 +404,7 @@
                                     <label class="form-check-label" for="printInvoice">Download PDF prescription after saving</label>
                                 </div>
                                 
-                                <button type="submit" class="btn btn-primary w-100" id="saveSaleBtn">
+                                <button type="submit" class="btn btn-standard-primary w-100" id="saveSaleBtn">
                                     <i class="fas fa-save me-1"></i> Complete Prescription
                                 </button>
                             </div>
@@ -267,10 +470,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'medicine-search-item';
                 resultItem.innerHTML = `
-                    <div class="d-flex justify-content-between">
-                        <span>${medicine.name}</span>
-                    </div>
-                    <div class="stock">In stock: ${medicine.stock}</div>
+                    <div class="medicine-name">${medicine.name}</div>
+                    <div class="stock">Available: ${medicine.quantity} units</div>
+                    <div class="category">${medicine.category || 'General'}</div>
                 `;
                 
                 resultItem.addEventListener('click', function() {
@@ -285,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             searchResults.style.display = 'block';
         } else {
-            searchResults.innerHTML = '<div class="medicine-search-item">No medicines found</div>';
+            searchResults.innerHTML = '<div class="medicine-search-item text-center text-muted"><i class="fas fa-search mb-1"></i><br>No medicines found</div>';
             searchResults.style.display = 'block';
         }
     });
@@ -362,9 +564,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td>
                         <div class="input-group input-group-sm">
-                            <button type="button" class="btn btn-outline-secondary decrease-qty" data-id="${item.id}">-</button>
-                            <input type="number" class="form-control text-center item-quantity" value="${item.quantity}" min="1" name="items[${index}][quantity]" data-id="${item.id}">
-                            <button type="button" class="btn btn-outline-secondary increase-qty" data-id="${item.id}">+</button>
+                            <button type="button" class="btn btn-outline-secondary decrease-qty" data-id="${item.id}">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="form-control text-center item-quantity quantity-input" value="${item.quantity}" min="1" name="items[${index}][quantity]" data-id="${item.id}">
+                            <button type="button" class="btn btn-outline-secondary increase-qty" data-id="${item.id}">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                     </td>
                     <td>
