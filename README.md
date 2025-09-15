@@ -6,6 +6,7 @@ This repository provides a **Laravel 8 development environment** using Docker, d
 
 ## 📑 Table of Contents
 
+- [🏥 Project Overview](#-project-overview)  
 - [🧰 Tech Stack](#tech-stack)  
 - [📦 Prerequisites](#prerequisites)  
 - [⚙️ Development Setup (Docker)](#development-setup-docker)  
@@ -21,6 +22,25 @@ This repository provides a **Laravel 8 development environment** using Docker, d
 - [🚀 Production/Server Deployment (Without Docker)](#productionserver-deployment-without-docker)  
 - [✅ Tips](#tips)  
 - [🧼 Troubleshooting](#troubleshooting)  
+
+***
+
+## Project Overview  
+
+**MediTrack SUSL** is a digital transformation initiative aimed at modernizing medical center operations within educational institutions, with **Sabaragamuwa University of Sri Lanka** serving as the pilot implementation.  
+
+The system focuses on:  
+
+- **💊 Digital Prescription Management**  
+  Replaces paper prescriptions with secure digital records, reducing errors.  
+
+- **📦 Medicine Stock & Expiry Analysis**  
+  Continuously monitors stock levels, tracks medicine usage.  
+
+- **👩‍⚕️ Staff Efficiency Support**  
+  Minimizes paperwork and manual calculations, allowing medical staff to dedicate more time to patient care.  
+
+By streamlining workflows and digitizing records, MediTrack SUSL enhances **accuracy, efficiency, and accessibility** in university medical services.  
 
 ***
 
