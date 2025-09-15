@@ -27,8 +27,8 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'total_drugs' => Product::count(),
-            'product_categories' => Product::distinct('category')->count('category'),
+            'total_drugs' => Product::where('expire_date', '>=', now())->where('quantity', '>', 0)->count(),
+            'product_categories' => Product::where('expire_date', '>=', now())->where('quantity', '>', 0)->distinct('category')->count('category'),
             'expired_products' => Product::where('expire_date', '<', now())->where('quantity', '>', 0)->count(),
             'system_users' => User::count()
         ];
