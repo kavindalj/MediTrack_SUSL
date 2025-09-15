@@ -25,7 +25,7 @@ This repository provides a **Laravel 8 development environment** using Docker, d
 
 ***
 
-## 🏥 Project Overview  
+## Project Overview  
 
 **MediTrack SUSL** is a digital transformation initiative aimed at modernizing medical center operations within educational institutions, with **Sabaragamuwa University of Sri Lanka** serving as the pilot implementation.  
 
