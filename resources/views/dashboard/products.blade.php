@@ -31,7 +31,7 @@
     .dataTables_filter {
         float: left !important;
         text-align: left !important;
-        margin-left: 325px; 
+        margin-left: 220px; 
         margin-bottom: 10px;
         padding: 5px;   
         }
@@ -49,10 +49,10 @@
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            font-size: 14px;
+            background-color: var(--light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-sm);
             color: #495057;
             margin: 0;
         }
@@ -72,7 +72,7 @@
         /* Highlight expired rows */
         .expired-row {
             background-color: #ffebee !important;
-            color: #c62828;
+            color: var(--action-red);
         }
 
         .expired-row:hover {
@@ -97,7 +97,7 @@
 
     <div class="table-container">
         <div class="d-flex justify-content-end align-items-center mb-3">
-            <a href="{{ route('dashboard.products.add') }}" class="btn btn-primary">
+            <a href="{{ route('dashboard.products.add') }}" class="btn btn-standard-primary">
                 <i class="fas fa-plus me-2"></i>Add Product
             </a>
         </div>
@@ -107,9 +107,9 @@
             <table id="productsTable" class="table table-striped table-hover align-middle">
                 <thead>
                      <tr>
-                        <th>Product Name <i class="fas fa-sort text-muted"></i></th>
-                        <th>Category <i class="fas fa-sort text-muted"></i></th>
-                        <th>Quantity <i class="fas fa-sort text-muted"></i></th>
+                        <th width="160">Product Name <i class="fas fa-sort text-muted"></i></th>
+                        <th width="100">Category <i class="fas fa-sort text-muted"></i></th>
+                        <th class="text-center">Quantity <i class="fas fa-sort text-muted"></i></th>
                         <th>Expire Date <i class="fas fa-sort text-muted"></i></th>
                         <th>Entry Date <i class="fas fa-sort text-muted"></i></th>
                         <th width="80">Action</th>
@@ -126,7 +126,7 @@
                         <tr class="{{ $isExpired ? 'expired-row' : '' }}" data-expired="{{ $isExpired ? 'true' : 'false' }}" data-qty="{{ (int) $product->quantity }}" data-expiry="{{ $product->expire_date ? $product->expire_date->toDateString() : '' }}">
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category }}</td>
-                            <td>
+                            <td class="text-center">
                                 <span class="badge bg-success">{{ $product->quantity }}</span>
                             </td>
                             <td>
@@ -145,7 +145,7 @@
                             </td>
                             <td>{{ $product->entry_date ? $product->entry_date->format('d M, Y') : 'N/A' }}</td>
                             <td>
-                                <button class="btn btn-sm btn-danger" onclick="deleteProduct({{ $product->id }})">
+                                <button class="btn btn-action-red" onclick="deleteProduct({{ $product->id }})">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>

@@ -73,31 +73,15 @@ class DashboardController extends Controller
 
         return view('dashboard.products', compact('products'));
     }
-    public function Prescription()
+    public function prescription()
     {
-        // Get search query if provided
-        $search = request('search');
-        
-        // Fetch real prescription data from database
-        $prescriptionsQuery = Prescription::with('prescriptionItems.product')
-            ->orderBy('created_at', 'desc');
-        
-        // Apply search filter if provided
-        if ($search) {
-            $prescriptionsQuery->where(function($query) use ($search) {
-                $query->where('student_id', 'LIKE', "%{$search}%")
-                      ->orWhere('prescription_number', 'LIKE', "%{$search}%")
-                      ->orWhere('medicine_names', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        // Paginate results
-        $perPage = request('per_page', 10);
-        $page = request('page', 1);
-        $prescriptions = $prescriptionsQuery->paginate($perPage, ['*'], 'page', $page);
+        // Fetch real prescription data from database - get all records for DataTables client-side processing
+        $prescriptions = Prescription::with('prescriptionItems.product')
+            ->orderBy('created_at', 'desc')
+            ->get();
         
         // Transform prescription data to match the view expectations
-        $prescriptions->getCollection()->transform(function ($prescription) {
+        foreach ($prescriptions as $prescription) {
             // Get medicine names from the prescription_items relationship
             $medicineNames = $prescription->prescriptionItems->map(function($item) {
                 return $item->product->name ?? 'Unknown Medicine';
@@ -110,8 +94,7 @@ class DashboardController extends Controller
             }
             
             $prescription->medicine_names_display = $medicineNamesString;
-            return $prescription;
-        });
+        }
 
         return view('dashboard.prescription', compact('prescriptions'));
     }

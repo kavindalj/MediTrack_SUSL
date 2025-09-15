@@ -6,65 +6,36 @@
 @section('styles')
 <style>
     .table-container {
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: white;
+        border-radius: var(--border-radius-lg);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        padding: 1.5rem;
     }
     .table {
         border: none;
         margin-bottom: 0;
     }
     .table thead th {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
+        background-color: var(--light);
+        border-bottom: 2px solid var(--border-color);
         border-top: none;
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
         color: #495057;
-        padding: 15px;
-        font-size: 14px;
+        padding: 1rem 0.75rem;
+        font-size: var(--font-size-sm);
     }
     .table tbody tr {
-        border-bottom: 1px solid #e9ecef;
+        border-bottom: 1px solid var(--border-color);
     }
     .table tbody td {
-        padding: 15px;
+        padding: 0.75rem;
         vertical-align: middle;
         border-top: none;
-        font-size: 14px;
-        color: #333;
+        font-size: var(--font-size-sm);
+        color: var(--text-dark);
     }
     .table tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-    .btn-action {
-        width: 30px;
-        height: 30px;
-        padding: 0;
-        border-radius: 4px;
-        border: none;
-        margin: 0 3px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .btn-edit {
-        background-color: #00bcd4;
-        color: white;
-    }
-    .btn-edit:hover {
-        background-color: #00acc1;
-        color: white;
-    }
-    .btn-delete {
-        background-color: #dc3545;
-        color: white;
-    }
-    .btn-delete:hover {
-        background-color: #c82333;
-        color: white;
+        background-color: var(--light);
     }
     .role-badge {
         background-color: transparent;
@@ -72,7 +43,7 @@
         padding: 5px 12px;
         border-radius: 15px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: var(--font-weight-medium);
         text-transform: capitalize;
         border: none;
     }
@@ -87,35 +58,20 @@
         margin-bottom: 1rem;
     }
     .breadcrumb-item a {
-        color: #0d6ffc;
+        color: var(--primary);
         text-decoration: none;
     }
     .breadcrumb-item.active {
-        color: #6c757d;
-    }
-    .add-user-btn {
-        background-color: #0d6ffc;
-        border-color: #0d6ffc;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-    .add-user-btn:hover {
-        background-color: #1163d6;
-        color: white;
-        text-decoration: none;
+        color: var(--text-muted);
     }
     .entries-info {
-        font-size: 14px;
-        color: #6c757d;
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
     }
     .form-select-sm, .form-control-sm {
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        font-size: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-sm);
     }
 </style>
 @endsection
@@ -134,7 +90,7 @@
             
             <div class="table-container">
                 <div class="d-flex justify-content-end align-items-center mb-3">
-                    <a href="{{ route('dashboard.users.add') }}" class="btn add-user-btn">
+                    <a href="{{ route('dashboard.users.add') }}" class="btn btn-standard-primary">
                         <i class="fas fa-plus me-2"></i>Add User
                     </a>
                 </div>
@@ -159,11 +115,11 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Name <i class="fas fa-sort text-muted"></i></th>
-                                <th>Email <i class="fas fa-sort text-muted"></i></th>
-                                <th>Role <i class="fas fa-sort text-muted"></i></th>
+                                <th width="200">Name <i class="fas fa-sort text-muted"></i></th>
+                                <th width="120">Email <i class="fas fa-sort text-muted"></i></th>
+                                <th class="text-center">Role <i class="fas fa-sort text-muted"></i></th>
                                 <th>Created date <i class="fas fa-sort text-muted"></i></th>
-                                <th>Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -171,17 +127,17 @@
                             <tr id="user-row-{{ $user['id'] }}">
                                 <td>{{ $user['name'] }}</td>
                                 <td>{{ $user['email'] }}</td>
-                                <td>
+                                <td class="text-center">
                                     <span class="role-badge">
                                         {{ str_replace('-', ' ', $user['role']) }}
                                     </span>
                                 </td>
                                 <td>{{(new DateTime($user['created_at']))->format('Y-m-d')}}</td>
-                                <td>
-                                    <button class="btn btn-action btn-edit" title="Edit User" onclick="editUser({{ $user['id'] }})">
+                                <td class="text-center">
+                                    <button class="btn btn-action-cyan" title="Edit User" onclick="editUser({{ $user['id'] }})">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-action btn-delete" title="Delete User" onclick="deleteUser('{{ route('dashboard.users.delete', ['id' => $user->id]) }}', '{{ $user['name'] }}', {{ $user['id'] }})">
+                                    <button class="btn btn-action-red" title="Delete User" onclick="deleteUser('{{ route('dashboard.users.delete', ['id' => $user->id]) }}', '{{ $user['name'] }}', {{ $user['id'] }})">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
