@@ -215,7 +215,7 @@
             
             <div class="table-container">
 
-            <div class="d-flex justify-content-end mb-3 border">
+            <div class="d-flex justify-content-end mb-3">
 <a href="#" class="btn add-prescription-btn" id="addPrescriptionBtn">
                         <i class="fas fa-plus"></i> New Prescription</a>
                 </div>
